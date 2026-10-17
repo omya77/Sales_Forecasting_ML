@@ -509,21 +509,29 @@
         }
 
         /* --------------------------------------------------------------------------
-           RESPONSIVE BREAKPOINTS (ZERO-SCROLL MOBILE & TABLET ENGINE)
+           RESPONSIVE BREAKPOINTS (STRICT ZERO-SCROLL MOBILE & TABLET LOCK)
            -------------------------------------------------------------------------- */
         @media (max-width: 991.98px) {
             html, body {
+                position: fixed !important;
+                inset: 0 !important;
+                width: 100% !important;
                 height: 100% !important;
+                height: 100dvh !important;
                 max-height: 100% !important;
                 overflow: hidden !important;
+                touch-action: pan-x !important;
+                overscroll-behavior: none !important;
             }
             .login-viewport {
-                height: 100vh !important;
+                position: fixed !important;
+                inset: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
                 height: 100dvh !important;
-                max-height: 100vh !important;
-                max-height: 100dvh !important;
+                max-height: 100% !important;
                 overflow: hidden !important;
-                padding: 12px 16px !important;
+                padding: 10px 14px !important;
                 margin: 0 !important;
                 display: flex !important;
                 align-items: center !important;
@@ -531,24 +539,38 @@
             }
             .cockpit-glow-wrapper {
                 width: 100% !important;
-                max-width: 430px !important;
+                max-width: 395px !important;
                 margin: 0 auto !important;
+            }
+            .cockpit-glow-wrapper::before {
+                display: none !important;
             }
             .login-dual-cockpit {
                 flex-direction: column !important;
                 max-width: 100% !important;
-                border-radius: 20px !important;
+                border-radius: 18px !important;
             }
             /* Hide the duplicate heavy showcase panel on mobile to guarantee zero scrolling */
             .login-showcase-panel {
                 display: none !important;
             }
             .login-form-panel {
-                padding: 22px 20px 18px 20px !important;
+                padding: 18px 18px 14px 18px !important;
+            }
+            .login-form-panel .mb-3 {
+                margin-bottom: 0.65rem !important;
+            }
+            .form-control {
+                height: 40px !important;
+                font-size: 0.82rem !important;
+            }
+            .btn-login-submit {
+                height: 40px !important;
+                font-size: 0.84rem !important;
             }
             .top-nav-dock {
-                top: 10px !important;
-                right: 14px !important;
+                top: 8px !important;
+                right: 12px !important;
                 left: auto !important;
             }
         }
@@ -711,14 +733,14 @@
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <div class="d-inline-flex align-items-center gap-1 badge-luxe badge-luxe-cyan px-2 py-1 mb-2" style="font-size: 0.68rem;">
+                    <div class="mb-2 mb-lg-3">
+                        <div class="d-none d-lg-inline-flex align-items-center gap-1 badge-luxe badge-luxe-cyan px-2 py-1 mb-2" style="font-size: 0.68rem;">
                             <span class="live-pulse-dot" style="background: var(--cyan); width: 6px; height: 6px;"></span> Secure Admin Gateway
                         </div>
-                        <h3 class="fw-bold mb-1" style="font-size: 1.35rem; color: var(--text-primary); letter-spacing: -0.025em;">
+                        <h3 class="fw-bold mb-0 mb-lg-1" style="font-size: 1.18rem; color: var(--text-primary); letter-spacing: -0.025em;">
                             Portal Authentication
                         </h3>
-                        <p class="text-slate-muted mb-0" style="font-size: 0.76rem;">
+                        <p class="text-slate-muted mb-0 d-none d-lg-block" style="font-size: 0.76rem;">
                             Sign in with authorized administrator credentials to proceed.
                         </p>
                     </div>
