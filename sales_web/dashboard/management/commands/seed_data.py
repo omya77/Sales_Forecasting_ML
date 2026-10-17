@@ -96,23 +96,30 @@ class Command(BaseCommand):
         # Build transactions
         self.stdout.write("Building transactions list...")
         for r in rows:
-            sale_date = datetime.strptime(r["Date"], "%Y-%m-%d").date()
+            sale_date_val = r.get("Sale Date") or r.get("Date")
+            if not sale_date_val:
+                continue
+            sale_date = datetime.strptime(sale_date_val.strip(), "%Y-%m-%d").date()
+            
+            sale_id_val = r.get("Sale ID") or r.get("Transaction ID")
+            discount_val = r.get("Discount") or r.get("Discount Applied") or 0
+
             tx_objects.append(SalesTransaction(
-                sale_id=r["Transaction ID"],
+                sale_id=sale_id_val,
                 customer_id=r["Customer ID"],
                 product_id=r["Product ID"],
                 product_name=r["Product Name"],
                 product_category=r["Product Category"],
                 sale_date=sale_date,
-                quantity_sold=int(r["Quantity Sold"]),
+                quantity_sold=int(float(r["Quantity Sold"])),
                 unit_price=Decimal(str(r["Unit Price"])),
-                discount=Decimal(str(r["Discount Applied"])),
+                discount=Decimal(str(discount_val)),
                 total_sales_amount=Decimal(str(r["Total Sales Amount"])),
-                cost_price=Decimal(str(r["Cost Price"])),
-                profit=Decimal(str(r["Profit"])),
-                payment_method=r["Payment Method"],
-                customer_city=r["Customer City"],
-                customer_state=r["Customer State"]
+                cost_price=Decimal(str(r.get("Cost Price") or 0)),
+                profit=Decimal(str(r.get("Profit") or 0)),
+                payment_method=r.get("Payment Method", "UPI"),
+                customer_city=r.get("Customer City", "Mumbai"),
+                customer_state=r.get("Customer State", "Maharashtra")
             ))
 
         # Bulk create transactions in batches of 1500
