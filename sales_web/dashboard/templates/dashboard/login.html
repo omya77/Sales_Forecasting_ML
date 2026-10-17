@@ -509,35 +509,47 @@
         }
 
         /* --------------------------------------------------------------------------
-           RESPONSIVE BREAKPOINTS
+           RESPONSIVE BREAKPOINTS (ZERO-SCROLL MOBILE & TABLET ENGINE)
            -------------------------------------------------------------------------- */
         @media (max-width: 991.98px) {
             html, body {
-                height: auto !important;
-                overflow-y: auto !important;
+                height: 100% !important;
+                max-height: 100% !important;
+                overflow: hidden !important;
             }
             .login-viewport {
-                height: auto !important;
-                min-height: 100vh !important;
-                padding: 60px 14px 20px 14px;
+                height: 100vh !important;
+                height: 100dvh !important;
+                max-height: 100vh !important;
+                max-height: 100dvh !important;
+                overflow: hidden !important;
+                padding: 12px 16px !important;
+                margin: 0 !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+            .cockpit-glow-wrapper {
+                width: 100% !important;
+                max-width: 430px !important;
+                margin: 0 auto !important;
             }
             .login-dual-cockpit {
-                flex-direction: column;
-                max-width: 480px;
-                border-radius: 20px;
+                flex-direction: column !important;
+                max-width: 100% !important;
+                border-radius: 20px !important;
             }
+            /* Hide the duplicate heavy showcase panel on mobile to guarantee zero scrolling */
             .login-showcase-panel {
-                border-right: none;
-                border-bottom: 1px solid var(--border-subtle);
-                padding: 24px 20px;
+                display: none !important;
             }
             .login-form-panel {
-                padding: 24px 20px;
+                padding: 22px 20px 18px 20px !important;
             }
             .top-nav-dock {
-                top: 12px;
-                left: 12px;
-                right: 12px;
+                top: 10px !important;
+                right: 14px !important;
+                left: auto !important;
             }
         }
     </style>
@@ -685,6 +697,20 @@
                      RIGHT FORM PANEL (SECURE AUTHENTICATION GATEWAY)
                      ================================================================ -->
                 <div class="login-form-panel">
+                    <!-- Mobile Brand Header (Crisp branding visible only on mobile/tablet) -->
+                    <div class="d-flex align-items-center gap-2 mb-2.5 d-lg-none">
+                        <div class="brand-chip-icon" style="width: 34px; height: 34px; font-size: 1.1rem; border-radius: 9px; background: linear-gradient(135deg, #4f46e5, #7c3aed); display: flex; align-items: center; justify-content: center; color: #fff; flex-shrink: 0;">
+                            <i class="bi bi-cpu-fill"></i>
+                        </div>
+                        <div>
+                            <div class="d-flex align-items-center gap-1.5">
+                                <span class="fw-bold" style="color: var(--text-primary); font-size: 1.05rem; letter-spacing: -0.02em;">SalesForecast</span>
+                                <span class="badge" style="background: var(--primary-gradient); color: #fff; font-size: 0.60rem; padding: 2px 6px; border-radius: 6px;">AI PRO</span>
+                            </div>
+                            <small class="text-slate-muted d-block" style="font-size: 0.65rem; line-height: 1.1;">Retail Demand Intelligence</small>
+                        </div>
+                    </div>
+
                     <div class="mb-3">
                         <div class="d-inline-flex align-items-center gap-1 badge-luxe badge-luxe-cyan px-2 py-1 mb-2" style="font-size: 0.68rem;">
                             <span class="live-pulse-dot" style="background: var(--cyan); width: 6px; height: 6px;"></span> Secure Admin Gateway
