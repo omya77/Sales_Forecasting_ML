@@ -87,6 +87,14 @@ if DATABASE_URL:
             conn_health_checks=True,
         )
     }
+elif os.environ.get('RENDER') or os.environ.get('USE_SQLITE'):
+    # Card-free SQLite database for Render Web Service deployment
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 else:
     DATABASES = {
         'default': {
