@@ -1,0 +1,463 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Executive Overview{% endblock %}
+{% block page_title %}Executive Sales Overview{% endblock %}
+{% block page_subtitle %}Real-time demand intelligence & financial performance aggregated from 10,219 MySQL records{% endblock %}
+
+{% block content %}
+<!-- KPI Widgets Grid (Next-Gen Bento Layout with Executive Tabular Numbers) -->
+<div class="row g-3 mb-4">
+    <!-- Total Revenue -->
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="kpi-compact">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="kpi-title"><i class="bi bi-wallet2 text-primary me-1"></i> Gross Revenue</span>
+                <div class="kpi-icon-square">
+                    <i class="bi bi-wallet2"></i>
+                </div>
+            </div>
+            <div class="kpi-value-bright">
+                <span class="kpi-curr">Rs.</span>
+                <span class="kpi-val">{{ kpis.revenue_int }}</span>
+                <span class="kpi-dec">{{ kpis.revenue_dec }}</span>
+            </div>
+            <div class="kpi-footer-row">
+                <span class="badge-luxe badge-luxe-emerald"><i class="bi bi-arrow-up-right"></i> +18.2% YoY</span>
+                <span class="kpi-sub-figure">~ {{ kpis.revenue_short }} Gross</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Realized Net Profit -->
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="kpi-compact">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="kpi-title"><i class="bi bi-graph-up text-success me-1"></i> Realized Net Profit</span>
+                <div class="kpi-icon-square">
+                    <i class="bi bi-graph-up"></i>
+                </div>
+            </div>
+            <div class="kpi-value-bright">
+                <span class="kpi-curr">Rs.</span>
+                <span class="kpi-val">{{ kpis.profit_int }}</span>
+                <span class="kpi-dec">{{ kpis.profit_dec }}</span>
+            </div>
+            <div class="kpi-footer-row">
+                <span class="badge-luxe badge-luxe-emerald"><i class="bi bi-shield-check"></i> {{ kpis.profit_margin }}% Margin</span>
+                <span class="kpi-sub-figure">~ {{ kpis.profit_short }} Net</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Transactions -->
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="kpi-compact">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="kpi-title"><i class="bi bi-bag-check-fill text-warning me-1"></i> Total Orders</span>
+                <div class="kpi-icon-square">
+                    <i class="bi bi-bag-check-fill"></i>
+                </div>
+            </div>
+            <div class="kpi-value-bright">
+                <span class="kpi-val">{{ kpis.total_transactions_formatted }}</span>
+            </div>
+            <div class="kpi-footer-row">
+                <span class="badge-luxe badge-luxe-amber"><i class="bi bi-people-fill"></i> {{ kpis.total_customers }} Customers</span>
+                <span class="kpi-sub-figure">17.0 Tx / Buyer</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Average Order Value (AOV) -->
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="kpi-compact">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="kpi-title"><i class="bi bi-cart3 text-info me-1"></i> Avg Basket (AOV)</span>
+                <div class="kpi-icon-square">
+                    <i class="bi bi-cart3"></i>
+                </div>
+            </div>
+            <div class="kpi-value-bright">
+                <span class="kpi-curr">Rs.</span>
+                <span class="kpi-val">{{ kpis.aov_int }}</span>
+                <span class="kpi-dec">{{ kpis.aov_dec }}</span>
+            </div>
+            <div class="kpi-footer-row">
+                <span class="badge-luxe badge-luxe-cyan"><i class="bi bi-layers-fill"></i> 15 Parameters</span>
+                <span class="kpi-sub-figure">Live MySQL Feed</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Charts Row -->
+<div class="row g-3 mb-4">
+    <!-- Monthly Sales Trajectory -->
+    <div class="col-12 col-xl-8">
+        <div class="crystal-card h-100">
+            <div class="card-head-compact">
+                <div>
+                    <div class="card-title-compact">
+                        <i class="bi bi-graph-up-arrow text-primary"></i> Monthly Sales & Profit Trajectory (2023–2025)
+                    </div>
+                    <small class="text-slate-muted" style="font-size: 0.72rem;">36-month timeline aggregated directly from MySQL transactions</small>
+                </div>
+                <div class="d-flex gap-2">
+                    <span class="badge-luxe badge-luxe-blue">● Gross Revenue</span>
+                    <span class="badge-luxe badge-luxe-emerald">--- Net Profit</span>
+                </div>
+            </div>
+            <div style="height: 230px; position: relative;">
+                <canvas id="monthlyTrendChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Sales Share Doughnut -->
+    <div class="col-12 col-xl-4">
+        <div class="crystal-card h-100 d-flex flex-column justify-content-between">
+            <div>
+                <div class="card-head-compact">
+                    <div class="card-title-compact">
+                        <i class="bi bi-pie-chart-fill text-success"></i> Category Breakdown
+                    </div>
+                    <span class="badge-luxe badge-luxe-blue">Share %</span>
+                </div>
+                <div style="height: 185px; position: relative;">
+                    <canvas id="categoryDoughnutChart"></canvas>
+                </div>
+            </div>
+            <div class="pt-3 text-center border-top mt-2" style="border-color: var(--border-subtle) !important;">
+                <a href="{% url 'eda' %}" class="btn-crystal-outline w-100 py-1 d-block text-center" style="font-size: 0.76rem;">
+                    View Complete EDA Analytics &rarr;
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Middle Grid: Top Products Leaderboard & Payment Method Volume -->
+<div class="row g-3 mb-4">
+    <!-- Top 5 Products Leaderboard -->
+    <div class="col-12 col-lg-7">
+        <div class="crystal-card h-100">
+            <div class="card-head-compact">
+                <div class="card-title-compact">
+                    <i class="bi bi-trophy-fill text-warning"></i> Top Revenue-Generating Products
+                </div>
+                <a href="{% url 'transactions' %}" class="text-primary fw-semibold text-decoration-none" style="font-size: 0.74rem;">View Full Ledger &rarr;</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table-crystal">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Product Name</th>
+                            <th>Category</th>
+                            <th class="text-center">Units</th>
+                            <th class="text-end">Revenue</th>
+                            <th class="text-end">Profit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for prod in top_products %}
+                        <tr>
+                            <td>
+                                <span class="badge-luxe badge-luxe-{% if forloop.counter == 1 %}amber{% elif forloop.counter == 2 %}blue{% elif forloop.counter == 3 %}cyan{% else %}purple{% endif %}" style="font-size: 0.68rem; padding: 2px 7px;">
+                                    #{{ forloop.counter }}
+                                </span>
+                            </td>
+                            <td class="fw-bold" style="color: var(--text-primary);">{{ prod.product_name }}</td>
+                            <td>
+                                <span class="badge-luxe badge-luxe-{% if forloop.counter == 1 %}blue{% elif forloop.counter == 2 %}pink{% elif forloop.counter == 3 %}amber{% elif forloop.counter == 4 %}emerald{% else %}purple{% endif %}">
+                                    {{ prod.product_category }}
+                                </span>
+                            </td>
+                            <td class="text-center"><span class="badge-luxe badge-luxe-cyan">{{ prod.units_sold|intcomma }}</span></td>
+                            <td class="text-end fw-bold" style="color: var(--cyan);">Rs. {{ prod.prod_revenue|floatformat:0|intcomma }}</td>
+                            <td class="text-end fw-semibold" style="color: var(--emerald);">Rs. {{ prod.prod_profit|floatformat:0|intcomma }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Methods Breakdown -->
+    <div class="col-12 col-lg-5">
+        <div class="crystal-card h-100">
+            <div class="card-head-compact">
+                <div class="card-title-compact">
+                    <i class="bi bi-credit-card-2-front-fill text-info"></i> Payment Channel Volume
+                </div>
+                <span class="badge-luxe badge-luxe-purple">Volume Split</span>
+            </div>
+            <div style="height: 175px; position: relative;">
+                <canvas id="paymentMethodChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Transactions (Compact 6 Rows) -->
+<div class="crystal-card">
+    <div class="card-head-compact">
+        <div>
+            <div class="card-title-compact">
+                <i class="bi bi-clock-history text-primary"></i> Live Transaction Feed (MySQL Relational Table)
+            </div>
+            <small class="text-slate-muted" style="font-size: 0.68rem;">Latest entries directly queried from <code>sales_transactions</code></small>
+        </div>
+        <a href="{% url 'transactions' %}" class="btn-crystal py-1 px-3" style="font-size: 0.74rem;">
+            Explore All 10,219 Records <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+    </div>
+    <div class="table-responsive">
+        <table class="table-crystal">
+            <thead>
+                <tr>
+                    <th>Sale ID</th>
+                    <th>Date</th>
+                    <th>Customer</th>
+                    <th>City</th>
+                    <th>Product</th>
+                    <th class="text-center">Qty</th>
+                    <th class="text-end">Total Amount</th>
+                    <th>Payment</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tx in recent_transactions %}
+                <tr>
+                    <td><code>{{ tx.sale_id }}</code></td>
+                    <td class="text-slate">{{ tx.sale_date|date:"d M Y" }}</td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="avatar-initials" style="width: 24px; height: 24px; font-size: 0.65rem;">
+                                {{ tx.customer.customer_name|slice:":2"|upper }}
+                            </div>
+                            <span class="fw-bold" style="color: var(--text-primary);">{{ tx.customer.customer_name }}</span>
+                        </div>
+                    </td>
+                    <td class="text-slate">{{ tx.customer_city }}</td>
+                    <td style="color: var(--text-primary);">{{ tx.product_name }}</td>
+                    <td class="text-center"><span class="badge-luxe badge-luxe-cyan">{{ tx.quantity_sold }}</span></td>
+                    <td class="text-end fw-bold" style="color: var(--cyan);">Rs. {{ tx.total_sales_amount|floatformat:2|intcomma }}</td>
+                    <td>
+                        {% if 'UPI' in tx.payment_method %}
+                            <span class="badge-luxe badge-luxe-emerald"><i class="bi bi-qr-code-scan"></i> UPI</span>
+                        {% elif 'Cash' in tx.payment_method %}
+                            <span class="badge-luxe badge-luxe-amber"><i class="bi bi-cash-stack"></i> COD</span>
+                        {% elif 'Credit' in tx.payment_method %}
+                            <span class="badge-luxe badge-luxe-blue"><i class="bi bi-credit-card-fill"></i> Credit Card</span>
+                        {% else %}
+                            <span class="badge-luxe badge-luxe-purple"><i class="bi bi-credit-card-2-front"></i> Debit Card</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    function getThemeTokens() {
+        const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+        return {
+            textColor: isDark ? '#94a3b8' : '#475569',
+            gridColor: isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.05)',
+            cardBg: isDark ? '#111827' : '#ffffff',
+            borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : '#e2e8f0',
+        };
+    }
+
+    const tokens = getThemeTokens();
+    Chart.defaults.color = tokens.textColor;
+    Chart.defaults.font.family = 'Inter';
+
+    // 1. Monthly Revenue & Profit Trajectory
+    const monthlyLabels = {{ monthly_labels|safe }};
+    const monthlyRevenue = {{ monthly_revenue|safe }};
+    const monthlyProfits = {{ monthly_profits|safe }};
+
+    const ctxTrend = document.getElementById('monthlyTrendChart').getContext('2d');
+    const gradRev = ctxTrend.createLinearGradient(0, 0, 0, 220);
+    gradRev.addColorStop(0, 'rgba(99, 102, 241, 0.35)');
+    gradRev.addColorStop(1, 'rgba(99, 102, 241, 0.0)');
+
+    new Chart(ctxTrend, {
+        type: 'line',
+        data: {
+            labels: monthlyLabels,
+            datasets: [
+                {
+                    label: 'Gross Sales (Rs.)',
+                    data: monthlyRevenue,
+                    borderColor: '#6366f1',
+                    backgroundColor: gradRev,
+                    fill: true,
+                    tension: 0.38,
+                    borderWidth: 2.4,
+                    pointRadius: 2.5,
+                    pointHoverRadius: 5,
+                    pointBackgroundColor: '#6366f1'
+                },
+                {
+                    label: 'Net Profit (Rs.)',
+                    data: monthlyProfits,
+                    borderColor: '#10b981',
+                    backgroundColor: 'transparent',
+                    borderDash: [3, 3],
+                    tension: 0.38,
+                    borderWidth: 1.8,
+                    pointRadius: 2.5,
+                    pointHoverRadius: 5,
+                    pointBackgroundColor: '#10b981'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                    titleColor: '#ffffff',
+                    bodyColor: '#e2e8f0',
+                    borderColor: 'rgba(255, 255, 255, 0.12)',
+                    borderWidth: 1,
+                    padding: 10,
+                    callbacks: {
+                        label: function(ctx) {
+                            return ctx.dataset.label + ': Rs. ' + ctx.raw.toLocaleString('en-IN');
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { color: tokens.gridColor },
+                    ticks: {
+                        color: tokens.textColor,
+                        font: { size: 9 },
+                        callback: function(val) {
+                            return 'Rs. ' + (val / 100000).toFixed(1) + 'L';
+                        }
+                    }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { color: tokens.textColor, font: { size: 8.5 }, maxRotation: 45 }
+                }
+            }
+        }
+    });
+
+    // 2. Category Doughnut Chart with Precision Center Badge Plugin
+    const catLabels = {{ category_labels|safe }};
+    const catValues = {{ category_values|safe }};
+
+    const doughnutCenterPlugin = {
+        id: 'doughnutCenterPlugin',
+        afterDraw(chart) {
+            const meta = chart.getDatasetMeta(0);
+            if (!meta || !meta.data || !meta.data.length) return;
+
+            // Extract the exact geometric center coordinates of the doughnut arc
+            const arc = meta.data[0];
+            const centerX = arc.x;
+            const centerY = arc.y;
+
+            const { ctx } = chart;
+            ctx.save();
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            // Primary Count Number (e.g. "6")
+            ctx.font = '800 22px "Plus Jakarta Sans", -apple-system, sans-serif';
+            ctx.fillStyle = '#6366f1';
+            ctx.fillText(String(catLabels.length || 6), centerX, centerY - 8);
+
+            // Subtitle Badge (e.g. "CATEGORIES")
+            ctx.font = '700 8.5px "Inter", -apple-system, sans-serif';
+            const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+            ctx.fillStyle = isDark ? '#94a3b8' : '#64748b';
+            ctx.fillText('CATEGORIES', centerX, centerY + 10);
+
+            ctx.restore();
+        }
+    };
+
+    const ctxCat = document.getElementById('categoryDoughnutChart').getContext('2d');
+    new Chart(ctxCat, {
+        type: 'doughnut',
+        data: {
+            labels: catLabels,
+            datasets: [{
+                data: catValues,
+                backgroundColor: ['#6366f1', '#10b981', '#f59e0b', '#8b5cf6', '#f43f5e', '#06b6d4'],
+                borderWidth: 2,
+                borderColor: tokens.cardBg
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '72%',
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: { boxWidth: 8, font: { size: 8.5 }, color: tokens.textColor, padding: 8 }
+                }
+            }
+        },
+        plugins: [doughnutCenterPlugin]
+    });
+
+    // 3. Payment Method Bar Chart
+    const payLabels = {{ payment_labels|safe }};
+    const payValues = {{ payment_values|safe }};
+
+    const ctxPay = document.getElementById('paymentMethodChart').getContext('2d');
+    new Chart(ctxPay, {
+        type: 'bar',
+        data: {
+            labels: payLabels,
+            datasets: [{
+                label: 'Sales (Rs.)',
+                data: payValues,
+                backgroundColor: '#06b6d4',
+                borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { color: tokens.gridColor },
+                    ticks: {
+                        color: tokens.textColor,
+                        font: { size: 9 },
+                        callback: function(v) { return 'Rs. ' + (v/100000).toFixed(0) + 'L'; }
+                    }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { color: tokens.textColor, font: { size: 8.5 } }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: sales-forecast-ai
+    runtime: python
+    buildCommand: bash build.sh
+    startCommand: gunicorn --chdir sales_web sales_web.wsgi:application --bind 0.0.0.0:$PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      - key: DJANGO_DEBUG
+        value: "False"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: sales-forecasting-db
+          property: connectionString
+      - key: DJANGO_SUPERUSER_USERNAME
+        value: admin
+      - key: DJANGO_SUPERUSER_PASSWORD
+        value: admin123
+      - key: DJANGO_SUPERUSER_EMAIL
+        value: admin@salesforecast.ai
+
+databases:
+  - name: sales-forecasting-db
+    databaseName: sales_forecasting_db
+    user: sales_user
+    plan: free

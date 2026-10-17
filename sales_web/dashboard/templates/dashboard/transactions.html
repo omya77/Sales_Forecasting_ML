@@ -1,0 +1,232 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}Sales Transactions Ledger{% endblock %}
+{% block breadcrumb %}Data Ledger / Sales Transactions{% endblock %}
+{% block page_title %}Sales Transactions Explorer{% endblock %}
+{% block page_subtitle %}Live relational transactional records containing all 15 parameters directly queried from MySQL{% endblock %}
+
+{% block content %}
+<!-- Search and Filter Bar (Glass Bento Toolbar) -->
+<div class="crystal-card mb-4">
+    <form method="GET" action="{% url 'transactions' %}" class="row g-3 align-items-end" id="ledgerFilterForm" onsubmit="return validateLedgerFilter(event);">
+        <div class="col-12 col-md-4">
+            <label class="form-label fw-bold text-slate-muted text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.8px;"><i class="bi bi-search me-1 text-primary"></i> Search Ledger</label>
+            <div class="search-bar-wrap">
+                <i class="bi bi-search search-icon"></i>
+                <input type="text" name="q" id="ledgerSearchInput" placeholder="Search product, customer, city, sale ID..." value="{{ query }}" maxlength="100">
+                {% if query %}
+                <a href="{% url 'transactions' %}" class="clear-search-btn" title="Clear search">
+                    <i class="bi bi-x-circle-fill"></i>
+                </a>
+                {% endif %}
+                <button type="submit" class="btn btn-sm btn-link p-0 ms-2 text-primary text-decoration-none" title="Execute Search">
+                    <i class="bi bi-arrow-right-circle-fill fs-5"></i>
+                </button>
+            </div>
+            <div class="invalid-feedback" id="ledgerSearchFeedback" style="display: none; font-size: 0.70rem; color: #fb7185; margin-top: 3px;">
+                <i class="bi bi-exclamation-circle-fill me-1"></i> Search query cannot exceed 100 characters.
+            </div>
+        </div>
+
+        <div class="col-6 col-md-3 transactions-filter-col">
+            <label class="form-label fw-bold text-slate-muted text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.8px;"><i class="bi bi-tag-fill me-1 text-primary"></i> Product Category</label>
+            <select name="category" class="form-select form-crystal fw-semibold">
+                <option value="">All Categories ({{ categories|length }})</option>
+                {% for cat in categories %}
+                <option value="{{ cat }}" {% if selected_category == cat %}selected{% endif %}>{{ cat }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-6 col-md-3 transactions-filter-col">
+            <label class="form-label fw-bold text-slate-muted text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.8px;"><i class="bi bi-credit-card-2-front-fill me-1 text-primary"></i> Payment Channel</label>
+            <select name="payment" class="form-select form-crystal fw-semibold">
+                <option value="">All Channels ({{ payment_methods|length }})</option>
+                {% for pay in payment_methods %}
+                <option value="{{ pay }}" {% if selected_payment == pay %}selected{% endif %}>{{ pay }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-12 col-md-2 d-flex gap-2">
+            <button type="submit" class="btn-crystal flex-fill justify-content-center d-inline-flex align-items-center gap-1" id="ledgerFilterBtn" style="height: 42px;">
+                <i class="bi bi-funnel-fill"></i> Filter
+            </button>
+            <a href="{% url 'transactions' %}" class="btn-crystal-outline px-3 d-inline-flex align-items-center justify-content-center gap-1" style="height: 42px;" title="Reset Filters">
+                <i class="bi bi-arrow-counterclockwise text-primary"></i> Reset
+            </a>
+        </div>
+    </form>
+</div>
+
+<!-- Transactions Table Displaying All 15 Required Parameters from Synopsis -->
+<div class="crystal-card">
+    <div class="card-head-compact flex-wrap gap-2">
+        <div>
+            <h6 class="mb-0 fw-bold card-title-compact">
+                <i class="bi bi-table text-primary"></i> Historical Sales Database (15 Fields)
+            </h6>
+            <small class="text-slate-muted" style="font-size: 0.70rem;">Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ total_results }} records</small>
+        </div>
+        <span class="badge-luxe badge-luxe-blue shadow-sm">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </span>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table-crystal">
+            <thead>
+                <tr>
+                    <th>Sale ID</th>
+                    <th>Date</th>
+                    <th>Customer (ID)</th>
+                    <th>Product Name (ID)</th>
+                    <th>Category</th>
+                    <th class="text-center">Qty</th>
+                    <th class="text-end">Unit Price</th>
+                    <th class="text-center">Disc</th>
+                    <th class="text-end">Total Amount</th>
+                    <th class="text-end">Cost</th>
+                    <th class="text-end">Profit</th>
+                    <th>Payment</th>
+                    <th>City / State</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tx in page_obj %}
+                <tr>
+                    <td><code>{{ tx.sale_id }}</code></td>
+                    <td class="text-slate">{{ tx.sale_date|date:"Y-m-d" }}</td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="avatar-initials" style="width: 24px; height: 24px; font-size: 0.65rem;">
+                                {{ tx.customer.customer_name|slice:":2"|upper }}
+                            </div>
+                            <div>
+                                <div class="fw-bold" style="color: var(--text-primary);">{{ tx.customer.customer_name }}</div>
+                                <small class="text-slate-muted" style="font-size: 0.68rem;">{{ tx.customer_id }}</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="fw-bold" style="color: var(--text-primary);">{{ tx.product_name }}</div>
+                        <small class="text-slate-muted" style="font-size: 0.68rem;">{{ tx.product_id }}</small>
+                    </td>
+                    <td>
+                        <span class="badge-luxe badge-luxe-{% if tx.product_category == 'Electronics' %}blue{% elif tx.product_category == 'Fashion' %}pink{% elif tx.product_category == 'Home & Kitchen' %}amber{% elif tx.product_category == 'Groceries' %}emerald{% elif tx.product_category == 'Beauty' %}purple{% else %}cyan{% endif %}">
+                            {{ tx.product_category }}
+                        </span>
+                    </td>
+                    <td class="text-center"><span class="badge-luxe badge-luxe-cyan">{{ tx.quantity_sold }}</span></td>
+                    <td class="text-end text-slate">Rs. {{ tx.unit_price }}</td>
+                    <td class="text-center text-slate">{{ tx.discount }}%</td>
+                    <td class="text-end fw-bold" style="color: var(--cyan);">Rs. {{ tx.total_sales_amount }}</td>
+                    <td class="text-end text-slate-muted">Rs. {{ tx.cost_price }}</td>
+                    <td class="text-end fw-semibold" style="color: var(--emerald);">Rs. {{ tx.profit }}</td>
+                    <td>
+                        {% if 'UPI' in tx.payment_method %}
+                            <span class="badge-luxe badge-luxe-emerald"><i class="bi bi-qr-code-scan"></i> UPI</span>
+                        {% elif 'Cash' in tx.payment_method %}
+                            <span class="badge-luxe badge-luxe-amber"><i class="bi bi-cash-stack"></i> COD</span>
+                        {% elif 'Credit' in tx.payment_method %}
+                            <span class="badge-luxe badge-luxe-blue"><i class="bi bi-credit-card-fill"></i> Credit Card</span>
+                        {% else %}
+                            <span class="badge-luxe badge-luxe-purple"><i class="bi bi-credit-card-2-front"></i> Debit Card</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div style="color: var(--text-primary);">{{ tx.customer_city }}</div>
+                        <small class="text-slate-muted" style="font-size: 0.68rem;">{{ tx.customer_state }}</small>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="13" class="text-center py-5 text-slate-muted">
+                        <i class="bi bi-inbox fs-2 d-block mb-2 text-primary"></i>
+                        No transactions found matching your search filter.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination Controls (Dual-Theme Styled) -->
+    {% if page_obj.has_other_pages %}
+    <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top flex-wrap gap-2" style="border-color: var(--border-subtle) !important;">
+        <small class="text-slate-muted" style="font-size: 0.72rem;">Showing page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</small>
+        <nav aria-label="Transaction pagination">
+            <ul class="pagination pagination-sm mb-0 gap-1">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="btn-crystal-outline py-1 px-2" style="font-size: 0.74rem;" href="?page=1{% if query %}&q={{ query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_payment %}&payment={{ selected_payment }}{% endif %}">&laquo; First</a>
+                </li>
+                <li class="page-item">
+                    <a class="btn-crystal-outline py-1 px-2" style="font-size: 0.74rem;" href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_payment %}&payment={{ selected_payment }}{% endif %}">Prev</a>
+                </li>
+                {% endif %}
+
+                <li class="page-item">
+                    <span class="btn-crystal py-1 px-3" style="font-size: 0.74rem; cursor: default;">{{ page_obj.number }}</span>
+                </li>
+
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="btn-crystal-outline py-1 px-2" style="font-size: 0.74rem;" href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_payment %}&payment={{ selected_payment }}{% endif %}">Next</a>
+                </li>
+                <li class="page-item">
+                    <a class="btn-crystal-outline py-1 px-2" style="font-size: 0.74rem;" href="?page={{ page_obj.paginator.num_pages }}{% if query %}&q={{ query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_payment %}&payment={{ selected_payment }}{% endif %}">Last &raquo;</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    function validateLedgerFilter(event) {
+        const input = document.getElementById('ledgerSearchInput');
+        const feedback = document.getElementById('ledgerSearchFeedback');
+        const btn = document.getElementById('ledgerFilterBtn');
+
+        if (input) {
+            const val = input.value.trim();
+            if (val.length > 100) {
+                event.preventDefault();
+                input.classList.add('is-invalid');
+                if (feedback) feedback.style.display = 'flex';
+                input.focus();
+                return false;
+            }
+            input.classList.remove('is-invalid');
+            if (feedback) feedback.style.display = 'none';
+        }
+
+        // Show loading state
+        if (btn) {
+            btn.classList.add('btn-loading');
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Filtering...';
+        }
+        return true;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const input = document.getElementById('ledgerSearchInput');
+        const feedback = document.getElementById('ledgerSearchFeedback');
+
+        if (input) {
+            input.addEventListener('input', function() {
+                if (input.value.length <= 100) {
+                    input.classList.remove('is-invalid');
+                    if (feedback) feedback.style.display = 'none';
+                } else {
+                    input.classList.add('is-invalid');
+                    if (feedback) feedback.style.display = 'flex';
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

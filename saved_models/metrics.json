@@ -1,0 +1,75 @@
+{
+    "best_model_name": "Random Forest Regression",
+    "models_evaluation": {
+        "Linear Regression": {
+            "model_name": "Linear Regression",
+            "mae": 28453.65,
+            "rmse": 34869.24,
+            "r2_score": 0.1173,
+            "mae_formatted": "Rs. 28,453.65",
+            "rmse_formatted": "Rs. 34,869.24",
+            "r2_percentage": "11.73%"
+        },
+        "Decision Tree Regression": {
+            "model_name": "Decision Tree Regression",
+            "mae": 27430.29,
+            "rmse": 37357.05,
+            "r2_score": -0.0132,
+            "mae_formatted": "Rs. 27,430.29",
+            "rmse_formatted": "Rs. 37,357.05",
+            "r2_percentage": "-1.32%"
+        },
+        "Random Forest Regression": {
+            "model_name": "Random Forest Regression",
+            "mae": 26050.55,
+            "rmse": 33895.93,
+            "r2_score": 0.1659,
+            "mae_formatted": "Rs. 26,050.55",
+            "rmse_formatted": "Rs. 33,895.93",
+            "r2_percentage": "16.59%"
+        }
+    },
+    "feature_columns": [
+        "year",
+        "month",
+        "day",
+        "dayofweek",
+        "quarter",
+        "is_weekend",
+        "is_month_start",
+        "is_month_end",
+        "is_festive",
+        "lag_1",
+        "lag_2",
+        "lag_7",
+        "lag_14",
+        "lag_30",
+        "rolling_mean_7",
+        "rolling_std_7",
+        "rolling_mean_30",
+        "rolling_std_30"
+    ],
+    "feature_importances": {
+        "rolling_mean_30": 0.1379,
+        "rolling_mean_7": 0.1199,
+        "lag_14": 0.0957,
+        "lag_30": 0.0901,
+        "rolling_std_7": 0.0812,
+        "lag_7": 0.0757,
+        "lag_2": 0.0747,
+        "rolling_std_30": 0.0744,
+        "lag_1": 0.0709,
+        "dayofweek": 0.0516,
+        "day": 0.0418,
+        "is_weekend": 0.0371,
+        "month": 0.0246,
+        "year": 0.0123,
+        "quarter": 0.0076,
+        "is_festive": 0.0043,
+        "is_month_start": 0.0001,
+        "is_month_end": 0.0
+    },
+    "train_samples": 852,
+    "test_samples": 214,
+    "last_trained_date": "2026-10-15 20:13:01"
+}

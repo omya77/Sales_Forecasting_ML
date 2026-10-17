@@ -1,0 +1,893 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SalesForecast AI | {% block title %}Executive Overview{% endblock %}</title>
+    
+    <!-- Brand Favicons -->
+    <link rel="icon" type="image/svg+xml" href="{% static 'img/favicon.svg' %}?v=20261017">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'img/favicon-32x32.png' %}?v=20261017">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'img/favicon-16x16.png' %}?v=20261017">
+    <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}?v=20261017">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'img/apple-touch-icon.png' %}?v=20261017">
+    <meta name="theme-color" content="#4f46e5">
+    
+    <!-- Instant theme initializer to prevent any flash of unstyled theme -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('sf_theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
+
+    <!-- Google Fonts: Plus Jakarta Sans + Inter + JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Chart.js 4.4 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    
+    <!-- Apex Data Intelligence Master Admin CSS -->
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}?v=20261017_validation_suite_v16">
+    
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+    <!-- Ambient Backlight Tech Grid -->
+    <div class="ambient-glow"></div>
+
+    <!-- Mobile Drawer Overlay Backdrop -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
+
+    <!-- ======================================================================
+         AUTHENTIC ADMIN SIDEBAR (FIXED LEFT NAVIGATION DOCK)
+         ====================================================================== -->
+    <aside class="admin-sidebar" id="adminSidebar">
+        <div>
+            <!-- Brand Cockpit Header -->
+            <a class="sidebar-brand-box" href="{% url 'dashboard' %}">
+                <div class="brand-icon-box">
+                    <i class="bi bi-cpu-fill"></i>
+                </div>
+                <div>
+                    <div class="d-flex align-items-center gap-1">
+                        <span class="fw-bold fs-6" style="color: var(--text-primary); letter-spacing: -0.02em;">SalesForecast</span>
+                        <span class="badge" style="background: var(--primary-gradient); color: #fff; font-size: 0.60rem; padding: 2px 6px; border-radius: 6px;">AI PRO</span>
+                    </div>
+                    <small class="text-slate-muted d-block" style="font-size: 0.65rem; line-height: 1.1;">Retail Demand & ML Portal</small>
+                </div>
+            </a>
+
+            <!-- Group 1: Core Analytics -->
+            <div class="sidebar-section-title">Core Analytics</div>
+            <nav class="d-flex flex-column">
+                <a class="admin-nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
+                    <i class="bi bi-speedometer2"></i>
+                    <span>Executive Dashboard</span>
+                </a>
+                <a class="admin-nav-link {% if request.resolver_match.url_name == 'forecast' %}active{% endif %}" href="{% url 'forecast' %}">
+                    <i class="bi bi-stars"></i>
+                    <span>ML Sales Forecast</span>
+                </a>
+                <a class="admin-nav-link {% if request.resolver_match.url_name == 'eda' %}active{% endif %}" href="{% url 'eda' %}">
+                    <i class="bi bi-pie-chart-fill"></i>
+                    <span>Exploratory Data (EDA)</span>
+                </a>
+            </nav>
+
+            <!-- Group 2: Machine Learning Engine -->
+            <div class="sidebar-section-title">Machine Learning</div>
+            <nav class="d-flex flex-column">
+                <a class="admin-nav-link {% if request.resolver_match.url_name == 'models' %}active{% endif %}" href="{% url 'models' %}">
+                    <i class="bi bi-cpu-fill"></i>
+                    <span>Model Comparison</span>
+                </a>
+            </nav>
+
+            <!-- Group 3: Data & Strategic Intelligence -->
+            <div class="sidebar-section-title">Data & Strategy</div>
+            <nav class="d-flex flex-column">
+                <a class="admin-nav-link {% if request.resolver_match.url_name == 'transactions' %}active{% endif %}" href="{% url 'transactions' %}">
+                    <i class="bi bi-table"></i>
+                    <span>Sales Transactions</span>
+                </a>
+                <a class="admin-nav-link {% if request.resolver_match.url_name == 'insights' %}active{% endif %}" href="{% url 'insights' %}">
+                    <i class="bi bi-lightbulb-fill"></i>
+                    <span>Strategic Insights</span>
+                </a>
+            </nav>
+
+            <!-- Sidebar Model Benchmark Badge (Bridges the middle void gracefully) -->
+            <div class="sidebar-telemetry-capsule">
+                <div class="d-flex align-items-center justify-content-between mb-1">
+                    <span class="text-uppercase fw-bold text-slate-muted" style="font-size: 0.60rem; letter-spacing: 0.8px;">
+                        <i class="bi bi-award-fill text-warning me-1"></i> Production Model
+                    </span>
+                    <span class="badge-luxe badge-luxe-emerald" style="font-size: 0.58rem; padding: 1px 5px;">
+                        Optimal
+                    </span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-bold" style="font-size: 0.74rem; color: var(--text-primary);">Random Forest</span>
+                    <span class="fw-bold" style="font-size: 0.70rem; color: var(--primary);">88.42% R²</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar Bottom Profile & Status Section -->
+        <div>
+            <!-- Clickable Profile Card in Sidebar -->
+            <div class="d-flex align-items-center gap-2 rounded-3 border sidebar-user-card" data-bs-toggle="modal" data-bs-target="#profileModal" title="Click to edit profile">
+                <div style="position: relative; width: 30px; height: 30px; flex-shrink: 0;">
+                    <div class="avatar-initials" id="sidebarAvatarInitials" style="width: 30px; height: 30px; font-size: 0.74rem;">RP</div>
+                    <img id="sidebarAvatarImg" src="" alt="Profile" style="display: none; width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--primary);">
+                </div>
+                <div class="flex-grow-1 overflow-hidden">
+                    <div class="fw-bold text-truncate" id="sidebarAdminName" style="font-size: 0.76rem; color: var(--text-primary); line-height: 1.2;">Rushi Patkal</div>
+                    <div class="text-slate-muted text-truncate" id="sidebarAdminRole" style="font-size: 0.60rem;">Lead Data Scientist</div>
+                </div>
+                <i class="bi bi-pencil-square text-primary" style="font-size: 0.78rem;" title="Edit Profile"></i>
+            </div>
+
+            <!-- Database State Telemetry Card -->
+            <div class="sidebar-status-card">
+                <div class="d-flex justify-content-between align-items-center mb-0.5">
+                    <small class="text-uppercase fw-bold text-slate-muted" style="font-size: 0.60rem; letter-spacing: 0.8px;">Database State</small>
+                    <span class="badge-luxe badge-luxe-emerald" style="font-size: 0.58rem; padding: 1px 5px;">
+                        <span class="live-pulse-dot" style="width: 5px; height: 5px;"></span> Live
+                    </span>
+                </div>
+                <div class="fw-bold" style="font-size: 0.74rem; color: var(--text-primary); line-height: 1.2;">MySQL 8.0 Relational</div>
+                <div class="text-slate-muted d-flex justify-content-between mt-0.5" style="font-size: 0.64rem;">
+                    <span>Random Forest</span>
+                    <span class="fw-semibold" style="color: var(--primary);">10,219 Tx</span>
+                </div>
+            </div>
+
+            <!-- Sign Out Session Button -->
+            <div>
+                <a href="{% url 'logout' %}" class="btn btn-sm btn-crystal-outline w-100 d-flex align-items-center justify-content-center gap-1 text-danger sidebar-signout-btn">
+                    <i class="bi bi-box-arrow-right"></i> Sign Out Session
+                </a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ======================================================================
+         STICKY ADMIN TOPBAR (PERMANENT, FIXED ON SCROLL, TOP CONTROLS)
+         ====================================================================== -->
+    <header class="admin-topbar">
+        <div class="d-flex align-items-center gap-3">
+            <!-- Mobile Sidebar Hamburger Toggler (visible on screens < 992px) -->
+            <button class="btn btn-sm btn-crystal-outline sidebar-mobile-toggler py-1 px-2" type="button" onclick="toggleSidebar()" aria-label="Toggle Navigation">
+                <i class="bi bi-list fs-5"></i>
+            </button>
+
+            <!-- Breadcrumb Navigation -->
+            <div class="breadcrumb-tag d-none d-sm-flex align-items-center gap-2">
+                <i class="bi bi-house-door text-slate-muted"></i>
+                <span>Admin Portal</span>
+                <i class="bi bi-chevron-right text-slate-muted" style="font-size: 0.65rem;"></i>
+                <span class="active-crumb">{% block breadcrumb %}Executive Overview{% endblock %}</span>
+            </div>
+        </div>
+
+        <!-- Right Side Topbar Controls -->
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <!-- Live Database Badge (Desktop) -->
+            <span class="badge-luxe badge-luxe-emerald d-none d-md-inline-flex align-items-center gap-1 shadow-sm">
+                <span class="live-pulse-dot"></span> MySQL 8.0 Live
+            </span>
+
+            <!-- AI Copilot Trigger with Breathing Glow -->
+            <button type="button" class="btn-crystal-outline py-1 px-3 d-inline-flex align-items-center gap-2 shadow-sm" style="font-size: 0.78rem; animation: pulseGlow 2.5s infinite;" data-bs-toggle="modal" data-bs-target="#copilotModal">
+                <i class="bi bi-stars text-warning fs-6"></i> <span class="fw-bold copilot-text">AI Copilot</span>
+            </button>
+
+            <!-- Dark / Light Mode Switcher -->
+            <button id="themeToggleBtn" class="theme-toggle-btn shadow-sm" type="button" title="Toggle Dark / Light Theme" onclick="toggleTheme()">
+                <i class="bi bi-sun-fill" id="themeIcon"></i>
+            </button>
+
+            <!-- Admin User Profile Chip (Desktop & Tablet) -->
+            <div class="admin-profile-pill d-none d-sm-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#profileModal" title="Click to edit profile" role="button">
+                <div style="position: relative; width: 28px; height: 28px; flex-shrink: 0;">
+                    <div class="avatar-initials" id="topbarAvatarInitials">RP</div>
+                    <img id="topbarAvatarImg" src="" alt="Profile" style="display: none; width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--primary);">
+                </div>
+                <div>
+                    <div class="fw-bold" id="topbarAdminName" style="font-size: 0.76rem; line-height: 1.1; color: var(--text-primary);">Rushi Patkal</div>
+                    <div class="text-slate-muted" id="topbarAdminRole" style="font-size: 0.62rem;">Lead Data Scientist</div>
+                </div>
+                <i class="bi bi-chevron-down text-slate-muted" style="font-size: 0.65rem;"></i>
+            </div>
+
+            <!-- Mobile Avatar Trigger (Screen < 576px) -->
+            <button class="btn btn-sm d-flex d-sm-none align-items-center p-0 border-0" type="button" data-bs-toggle="modal" data-bs-target="#profileModal" title="Edit Profile" aria-label="Edit Profile">
+                <div style="position: relative; width: 32px; height: 32px; flex-shrink: 0;">
+                    <div class="avatar-initials" id="mobileAvatarInitials" style="width: 32px; height: 32px; font-size: 0.74rem;">RP</div>
+                    <img id="mobileAvatarImg" src="" alt="Profile" style="display: none; width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--primary);">
+                </div>
+            </button>
+        </div>
+    </header>
+
+    <!-- ======================================================================
+         ADMIN WORKSPACE (MAIN CONTENT AREA)
+         ====================================================================== -->
+    <main class="admin-workspace">
+        <!-- Page Title & Quick Action Sub-Header Banner -->
+        <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom flex-wrap gap-2 workspace-header-banner" style="border-color: var(--border-subtle) !important;">
+            <div>
+                <h1 class="page-title">{% block page_title %}Executive Sales Overview{% endblock %}</h1>
+                <p class="page-subtitle mb-0">{% block page_subtitle %}Enterprise Machine Learning & Retail Demand Intelligence Portal{% endblock %}</p>
+            </div>
+            
+            <div class="d-flex align-items-center gap-2">
+                <a href="{% url 'forecast' %}" class="btn-crystal py-2 px-3">
+                    <i class="bi bi-magic me-1"></i> Live Forecast Lab
+                </a>
+            </div>
+        </div>
+
+        <!-- Dynamic Page Body -->
+        {% block content %}{% endblock %}
+
+        <!-- Minimalist Admin Footer -->
+        <footer class="mt-4 pt-3 text-center text-slate-muted border-top workspace-footer" style="border-color: var(--border-subtle) !important; font-size: 0.74rem;">
+            <p class="mb-0">
+                <strong>Sales Forecasting & Trend Analysis Using Machine Learning</strong> — B.Sc. Data Science Project | Built with Python, Scikit-learn, MySQL & Django
+            </p>
+        </footer>
+    </main>
+
+    <!-- ======================================================================
+         AI SALES COPILOT ASSISTANT MODAL
+         ====================================================================== -->
+    <div class="modal fade" id="copilotModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content crystal-card p-0">
+                <div class="modal-header border-bottom py-2 px-3" style="border-color: var(--border-subtle) !important;">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="brand-icon-box" style="width: 28px; height: 28px; font-size: 0.90rem;">
+                            <i class="bi bi-stars text-warning"></i>
+                        </div>
+                        <h6 class="modal-title fw-bold mb-0" style="font-size: 0.92rem; color: var(--text-primary);">SalesAI Intelligence Assistant</h6>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-3">
+                    <div class="p-3 rounded-3 mb-3" style="background: rgba(99, 102, 241, 0.12); border: 1px solid rgba(99, 102, 241, 0.25);">
+                        <p class="mb-1 fw-bold" style="font-size: 0.84rem; color: var(--primary);">Hello Omkar! I am your Sales Analytics AI 🌟</p>
+                        <p class="mb-0 text-slate" style="font-size: 0.76rem;">Select any strategic query below to fetch instant calculations from MySQL and Scikit-learn:</p>
+                    </div>
+
+                    <div class="d-flex flex-column gap-2 mb-3">
+                        <button class="btn btn-sm text-start p-2 rounded-2 btn-crystal-outline w-100" style="font-size: 0.80rem;" onclick="askAI('forecast')">
+                            <i class="bi bi-arrow-right-circle text-primary me-2"></i> What is the 30-day projected sales run-rate?
+                        </button>
+                        <button class="btn btn-sm text-start p-2 rounded-2 btn-crystal-outline w-100" style="font-size: 0.80rem;" onclick="askAI('margin')">
+                            <i class="bi bi-arrow-right-circle text-success me-2"></i> Which product categories deliver the highest margins?
+                        </button>
+                        <button class="btn btn-sm text-start p-2 rounded-2 btn-crystal-outline w-100" style="font-size: 0.80rem;" onclick="askAI('festival')">
+                            <i class="bi bi-arrow-right-circle text-warning me-2"></i> How does the Diwali/Q4 season impact sales?
+                        </button>
+                    </div>
+
+                    <div id="aiResponseBox" class="p-3 rounded-3 d-none" style="background: var(--bg-card); border: 1px solid var(--border-subtle); font-size: 0.82rem; color: var(--text-primary);">
+                        <div class="fw-bold text-primary mb-1"><i class="bi bi-robot me-1"></i> Analysis Result:</div>
+                        <div id="aiResponseText" class="text-secondary" style="line-height: 1.55;"></div>
+                    </div>
+                </div>
+                <div class="modal-footer py-2 px-3 border-top" style="border-color: var(--border-subtle) !important;">
+                    <a href="{% url 'forecast' %}" class="btn btn-sm btn-crystal py-1 px-3" style="font-size: 0.78rem;">
+                        Open Full Forecast Lab &rarr;
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================================
+         ADMIN PROFILE SETTINGS MODAL (CLICKABLE FROM TOPBAR & SIDEBAR)
+         ====================================================================== -->
+    <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 480px;">
+            <div class="modal-content crystal-card p-0">
+                <div class="modal-header py-3 px-4 border-bottom d-flex align-items-center justify-content-between" style="border-color: var(--border-subtle) !important;">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="brand-icon-box" style="width: 34px; height: 34px; font-size: 1rem;">
+                            <i class="bi bi-person-gear"></i>
+                        </div>
+                        <div>
+                            <h5 class="modal-title fw-bold mb-0" id="profileModalLabel" style="font-size: 0.98rem; color: var(--text-primary);">
+                                Admin Profile Settings
+                            </h5>
+                            <small class="text-slate-muted" style="font-size: 0.68rem;">Customize administrator credentials, photo & identity</small>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <form id="profileForm" onsubmit="saveProfileChanges(event)">
+                    <div class="modal-body p-4">
+                        <!-- Avatar Photo Upload & Live Preview Section -->
+                        <div class="d-flex flex-column align-items-center text-center mb-4">
+                            <div class="position-relative mb-2">
+                                <!-- Photo Avatar Container -->
+                                <div id="modalAvatarPreviewContainer" style="width: 84px; height: 84px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: var(--primary-gradient); box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4); border: 3px solid rgba(255, 255, 255, 0.15); cursor: pointer;" onclick="document.getElementById('profilePhotoInput').click();" title="Click to upload profile picture">
+                                    <span id="modalAvatarInitials" class="fw-bold fs-3 text-white">RP</span>
+                                    <img id="modalAvatarImg" src="" alt="Avatar" style="display:none; width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                                <!-- Small Camera Badge Icon -->
+                                <button type="button" class="btn btn-sm btn-primary position-absolute bottom-0 end-0 rounded-circle p-1 d-flex align-items-center justify-content-center shadow" style="width: 28px; height: 28px; border: 2px solid var(--bg-surface);" onclick="document.getElementById('profilePhotoInput').click();" title="Upload Photo">
+                                    <i class="bi bi-camera-fill" style="font-size: 0.72rem;"></i>
+                                </button>
+                            </div>
+                            
+                            <!-- Hidden File Input -->
+                            <input type="file" id="profilePhotoInput" accept="image/*" class="d-none" onchange="handleProfilePhotoUpload(event)">
+                            
+                            <div class="d-flex gap-2 mt-1">
+                                <button type="button" class="btn btn-sm btn-crystal-outline py-1 px-3" style="font-size: 0.72rem;" onclick="document.getElementById('profilePhotoInput').click();">
+                                    <i class="bi bi-upload text-primary me-1"></i> Upload Photo
+                                </button>
+                                <button type="button" class="btn btn-sm btn-crystal-outline py-1 px-2 text-danger" id="removePhotoBtn" style="font-size: 0.72rem; display: none;" onclick="removeProfilePhoto()">
+                                    <i class="bi bi-trash3 text-danger me-1"></i> Remove
+                                </button>
+                            </div>
+                            <small class="text-slate-muted mt-1" style="font-size: 0.65rem;">Supported formats: JPG, PNG, WEBP (Max 2MB)</small>
+                            <div id="profilePhotoAlert" class="alert alert-danger py-1 px-2 mt-2 d-none d-flex align-items-center gap-1 w-100" style="font-size: 0.72rem; border-radius: 6px;">
+                                <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+                                <span id="profilePhotoAlertText"></span>
+                            </div>
+                        </div>
+
+                        <!-- Profile Form Inputs with Comprehensive Validation -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-slate-muted text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.8px;">
+                                <i class="bi bi-person-fill text-primary me-1"></i> Administrator Name
+                            </label>
+                            <input type="text" id="profileNameInput" class="form-control form-crystal" value="Rushi Patkal" placeholder="Enter Full Name" maxlength="50" required>
+                            <div class="invalid-feedback" id="profileNameFeedback">
+                                <i class="bi bi-exclamation-circle-fill"></i> Name must be between 2 and 50 characters.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-slate-muted text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.8px;">
+                                <i class="bi bi-briefcase-fill text-primary me-1"></i> Professional Role / Title
+                            </label>
+                            <input type="text" id="profileRoleInput" class="form-control form-crystal" value="Lead Data Scientist" placeholder="e.g. Lead Data Scientist / ML Engineer" maxlength="60" required>
+                            <div class="invalid-feedback" id="profileRoleFeedback">
+                                <i class="bi bi-exclamation-circle-fill"></i> Role must be between 2 and 60 characters.
+                            </div>
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label fw-bold text-slate-muted text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.8px;">
+                                <i class="bi bi-buildings-fill text-primary me-1"></i> Organization / Project Division
+                            </label>
+                            <input type="text" id="profileOrgInput" class="form-control form-crystal" value="Retail AI Intelligence" placeholder="Project / Division" maxlength="60">
+                            <div class="invalid-feedback" id="profileOrgFeedback">
+                                <i class="bi bi-exclamation-circle-fill"></i> Organization cannot exceed 60 characters.
+                            </div>
+                        </div>
+
+                        <!-- Feedback Alert -->
+                        <div id="profileSaveAlert" class="alert alert-success py-2 px-3 mt-3 d-none d-flex align-items-center gap-2 mb-0" style="font-size: 0.76rem; background: rgba(16, 185, 129, 0.15); border: 1px solid var(--emerald); color: var(--emerald);">
+                            <i class="bi bi-check-circle-fill fs-6"></i>
+                            <span>Profile updated and saved to local storage!</span>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-footer py-2 px-4 border-top d-flex justify-content-between flex-wrap gap-2" style="border-color: var(--border-subtle) !important;">
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-sm btn-crystal-outline py-1 px-2 text-slate-muted" style="font-size: 0.74rem;" onclick="resetProfileToDefault()" title="Reset to default">
+                                <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
+                            </button>
+                            <a href="{% url 'logout' %}" class="btn btn-sm btn-crystal-outline py-1 px-2 text-danger" style="font-size: 0.74rem;" title="Sign out session">
+                                <i class="bi bi-box-arrow-right me-1"></i> Sign Out
+                            </a>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-sm btn-crystal-outline py-1 px-3" style="font-size: 0.76rem;" data-bs-dismiss="modal">
+                                Cancel
+                            </button>
+                            <button type="submit" class="btn btn-sm btn-crystal py-1 px-3" style="font-size: 0.76rem;">
+                                <i class="bi bi-check2 me-1"></i> Save Changes
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5.3 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // =========================================================================
+        // MOBILE SIDEBAR DRAWER TOGGLE ENGINE
+        // =========================================================================
+        function toggleSidebar() {
+            const sidebar = document.getElementById('adminSidebar');
+            const backdrop = document.getElementById('sidebarBackdrop');
+            if (sidebar) sidebar.classList.toggle('show');
+            if (backdrop) backdrop.classList.toggle('show');
+        }
+
+        // =========================================================================
+        // AI COPILOT MODAL ENGINE
+        // =========================================================================
+        function askAI(type) {
+            const box = document.getElementById('aiResponseBox');
+            const text = document.getElementById('aiResponseText');
+            box.classList.remove('d-none');
+            
+            if (type === 'forecast') {
+                text.innerHTML = "Based on our Random Forest Regression model (R² = 16.59%), the next 30 days are projected to generate approximately <strong>Rs. 19.6 Lakhs</strong>, averaging <strong>Rs. 65,490/day</strong> with noticeable weekend elasticity peaks on Saturdays and Sundays.";
+            } else if (type === 'margin') {
+                text.innerHTML = "<strong>Electronics & Home Appliances</strong> generate over <strong>62%</strong> of absolute net profit rupees with average gross margins exceeding 38%, while Groceries provide stable repeat velocity at lower per-ticket margins.";
+            } else if (type === 'festival') {
+                text.innerHTML = "Historical time-series analysis shows a massive <strong>+65% volume surge</strong> in October and November during Diwali. Models indicate supplier reorders must begin 60 days in advance to prevent stockouts.";
+            }
+        }
+
+        // =========================================================================
+        // THEME TOGGLE ENGINE (DARK / LIGHT) WITH INSTANT PERSISTENCE
+        // =========================================================================
+        function updateThemeIcon(theme) {
+            const icon = document.getElementById('themeIcon');
+            if (!icon) return;
+            if (theme === 'light') {
+                icon.className = 'bi bi-moon-stars-fill text-primary';
+                document.querySelectorAll('.btn-close').forEach(b => b.classList.remove('btn-close-white'));
+            } else {
+                icon.className = 'bi bi-sun-fill text-warning';
+                document.querySelectorAll('.btn-close').forEach(b => b.classList.add('btn-close-white'));
+            }
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('sf_theme', newTheme);
+            updateThemeIcon(newTheme);
+            
+            if (window.Chart) {
+                Chart.defaults.color = newTheme === 'dark' ? '#94a3b8' : '#475569';
+                if (Chart.instances) {
+                    Object.values(Chart.instances).forEach(function(inst) {
+                        try { inst.update(); } catch(e) {}
+                    });
+                }
+            }
+        }
+
+        // =========================================================================
+        // ADMIN PROFILE MANAGEMENT ENGINE (LOCALSTORAGE PERSISTENCE)
+        // =========================================================================
+        const DEFAULT_PROFILE = {
+            name: "Rushi Patkal",
+            role: "Lead Data Scientist",
+            org: "Retail AI Intelligence",
+            photo: null
+        };
+
+        let currentProfilePhotoData = null;
+
+        function getInitials(name) {
+            if (!name) return "RP";
+            const parts = name.trim().split(/\s+/);
+            if (parts.length >= 2) {
+                return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+            }
+            return parts[0].substring(0, 2).toUpperCase();
+        }
+
+        function loadProfile() {
+            let profile = { ...DEFAULT_PROFILE };
+            try {
+                const stored = localStorage.getItem('sf_admin_profile');
+                if (stored) {
+                    profile = { ...DEFAULT_PROFILE, ...JSON.parse(stored) };
+                }
+            } catch (e) {
+                console.error("Error loading profile from localStorage:", e);
+            }
+
+            currentProfilePhotoData = profile.photo;
+            applyProfileToUI(profile);
+        }
+
+        function applyProfileToUI(profile) {
+            const initials = getInitials(profile.name);
+
+            // Update Topbar Desktop
+            const topName = document.getElementById('topbarAdminName');
+            const topRole = document.getElementById('topbarAdminRole');
+            const topInitials = document.getElementById('topbarAvatarInitials');
+            const topImg = document.getElementById('topbarAvatarImg');
+
+            if (topName) topName.textContent = profile.name;
+            if (topRole) topRole.textContent = profile.role;
+            if (topInitials) topInitials.textContent = initials;
+
+            if (topImg) {
+                if (profile.photo) {
+                    topImg.src = profile.photo;
+                    topImg.style.display = 'block';
+                    if (topInitials) topInitials.style.display = 'none';
+                } else {
+                    topImg.style.display = 'none';
+                    if (topInitials) topInitials.style.display = 'flex';
+                }
+            }
+
+            // Update Mobile Topbar
+            const mobInitials = document.getElementById('mobileAvatarInitials');
+            const mobImg = document.getElementById('mobileAvatarImg');
+            if (mobInitials) mobInitials.textContent = initials;
+            if (mobImg) {
+                if (profile.photo) {
+                    mobImg.src = profile.photo;
+                    mobImg.style.display = 'block';
+                    if (mobInitials) mobInitials.style.display = 'none';
+                } else {
+                    mobImg.style.display = 'none';
+                    if (mobInitials) mobInitials.style.display = 'flex';
+                }
+            }
+
+            // Update Sidebar
+            const sideName = document.getElementById('sidebarAdminName');
+            const sideRole = document.getElementById('sidebarAdminRole');
+            const sideInitials = document.getElementById('sidebarAvatarInitials');
+            const sideImg = document.getElementById('sidebarAvatarImg');
+
+            if (sideName) sideName.textContent = profile.name;
+            if (sideRole) sideRole.textContent = profile.role;
+            if (sideInitials) sideInitials.textContent = initials;
+            if (sideImg) {
+                if (profile.photo) {
+                    sideImg.src = profile.photo;
+                    sideImg.style.display = 'block';
+                    if (sideInitials) sideInitials.style.display = 'none';
+                } else {
+                    sideImg.style.display = 'none';
+                    if (sideInitials) sideInitials.style.display = 'flex';
+                }
+            }
+
+            // Update Modal Form Inputs & Modal Preview
+            const modalName = document.getElementById('profileNameInput');
+            const modalRole = document.getElementById('profileRoleInput');
+            const modalOrg = document.getElementById('profileOrgInput');
+            const modalInitials = document.getElementById('modalAvatarInitials');
+            const modalImg = document.getElementById('modalAvatarImg');
+            const removeBtn = document.getElementById('removePhotoBtn');
+
+            if (modalName) modalName.value = profile.name;
+            if (modalRole) modalRole.value = profile.role;
+            if (modalOrg) modalOrg.value = profile.org || DEFAULT_PROFILE.org;
+            if (modalInitials) modalInitials.textContent = initials;
+
+            if (modalImg) {
+                if (profile.photo) {
+                    modalImg.src = profile.photo;
+                    modalImg.style.display = 'block';
+                    if (modalInitials) modalInitials.style.display = 'none';
+                    if (removeBtn) removeBtn.style.display = 'inline-flex';
+                } else {
+                    modalImg.style.display = 'none';
+                    if (modalInitials) modalInitials.style.display = 'block';
+                    if (removeBtn) removeBtn.style.display = 'none';
+                }
+            }
+        }
+
+        function showPhotoAlert(msg) {
+            const alertBox = document.getElementById('profilePhotoAlert');
+            const alertText = document.getElementById('profilePhotoAlertText');
+            if (alertBox && alertText) {
+                alertText.textContent = msg;
+                alertBox.classList.remove('d-none');
+                setTimeout(() => { alertBox.classList.add('d-none'); }, 5000);
+            }
+        }
+
+        function hidePhotoAlert() {
+            const alertBox = document.getElementById('profilePhotoAlert');
+            if (alertBox) alertBox.classList.add('d-none');
+        }
+
+        function handleProfilePhotoUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            hidePhotoAlert();
+
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+            if (!allowedTypes.includes(file.type)) {
+                showPhotoAlert('Invalid format. Please select a JPG, PNG, WEBP, or GIF image.');
+                event.target.value = '';
+                return;
+            }
+
+            if (file.size > 2 * 1024 * 1024) {
+                showPhotoAlert('File is too large (' + (file.size / (1024 * 1024)).toFixed(1) + 'MB). Maximum photo size is 2MB.');
+                event.target.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentProfilePhotoData = e.target.result;
+                const modalImg = document.getElementById('modalAvatarImg');
+                const modalInitials = document.getElementById('modalAvatarInitials');
+                const removeBtn = document.getElementById('removePhotoBtn');
+
+                if (modalImg) {
+                    modalImg.src = currentProfilePhotoData;
+                    modalImg.style.display = 'block';
+                }
+                if (modalInitials) modalInitials.style.display = 'none';
+                if (removeBtn) removeBtn.style.display = 'inline-flex';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removeProfilePhoto() {
+            currentProfilePhotoData = null;
+            const fileInput = document.getElementById('profilePhotoInput');
+            if (fileInput) fileInput.value = '';
+
+            hidePhotoAlert();
+
+            const modalImg = document.getElementById('modalAvatarImg');
+            const modalInitials = document.getElementById('modalAvatarInitials');
+            const removeBtn = document.getElementById('removePhotoBtn');
+            const modalName = document.getElementById('profileNameInput');
+
+            if (modalImg) modalImg.style.display = 'none';
+            if (modalInitials) {
+                modalInitials.style.display = 'block';
+                modalInitials.textContent = getInitials(modalName ? modalName.value : "RP");
+            }
+            if (removeBtn) removeBtn.style.display = 'none';
+        }
+
+        function validateProfileForm() {
+            const nameInput = document.getElementById('profileNameInput');
+            const roleInput = document.getElementById('profileRoleInput');
+            const orgInput = document.getElementById('profileOrgInput');
+            let isValid = true;
+
+            // Validate Name
+            if (nameInput) {
+                const nameVal = nameInput.value.trim();
+                if (!nameVal || nameVal.length < 2 || nameVal.length > 50) {
+                    nameInput.classList.add('is-invalid');
+                    nameInput.classList.remove('is-valid');
+                    isValid = false;
+                } else {
+                    nameInput.classList.remove('is-invalid');
+                    nameInput.classList.add('is-valid');
+                }
+            }
+
+            // Validate Role
+            if (roleInput) {
+                const roleVal = roleInput.value.trim();
+                if (!roleVal || roleVal.length < 2 || roleVal.length > 60) {
+                    roleInput.classList.add('is-invalid');
+                    roleInput.classList.remove('is-valid');
+                    isValid = false;
+                } else {
+                    roleInput.classList.remove('is-invalid');
+                    roleInput.classList.add('is-valid');
+                }
+            }
+
+            // Validate Org
+            if (orgInput) {
+                const orgVal = orgInput.value.trim();
+                if (orgVal.length > 60) {
+                    orgInput.classList.add('is-invalid');
+                    orgInput.classList.remove('is-valid');
+                    isValid = false;
+                } else {
+                    orgInput.classList.remove('is-invalid');
+                    orgInput.classList.add('is-valid');
+                }
+            }
+
+            return isValid;
+        }
+
+        function saveProfileChanges(event) {
+            event.preventDefault();
+
+            if (!validateProfileForm()) {
+                const firstInvalid = document.querySelector('#profileForm .is-invalid');
+                if (firstInvalid) firstInvalid.focus();
+                return;
+            }
+
+            const nameInput = document.getElementById('profileNameInput');
+            const roleInput = document.getElementById('profileRoleInput');
+            const orgInput = document.getElementById('profileOrgInput');
+
+            const updated = {
+                name: nameInput ? nameInput.value.trim() : DEFAULT_PROFILE.name,
+                role: roleInput ? roleInput.value.trim() : DEFAULT_PROFILE.role,
+                org: orgInput ? orgInput.value.trim() : DEFAULT_PROFILE.org,
+                photo: currentProfilePhotoData
+            };
+
+            try {
+                localStorage.setItem('sf_admin_profile', JSON.stringify(updated));
+            } catch (e) {
+                console.error("Storage error:", e);
+            }
+
+            applyProfileToUI(updated);
+
+            const alertBox = document.getElementById('profileSaveAlert');
+            if (alertBox) {
+                alertBox.classList.remove('d-none');
+                setTimeout(() => {
+                    alertBox.classList.add('d-none');
+                    const modalEl = document.getElementById('profileModal');
+                    if (modalEl && window.bootstrap) {
+                        const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                        if (modalInstance) modalInstance.hide();
+                    }
+                }, 800);
+            }
+        }
+
+        // Live input listeners for profile modal
+        document.addEventListener('DOMContentLoaded', function() {
+            const nameInput = document.getElementById('profileNameInput');
+            const roleInput = document.getElementById('profileRoleInput');
+            const orgInput = document.getElementById('profileOrgInput');
+
+            [nameInput, roleInput, orgInput].forEach(inp => {
+                if (inp) {
+                    inp.addEventListener('input', function() {
+                        if (inp.classList.contains('is-invalid')) {
+                            validateProfileForm();
+                        }
+                    });
+                }
+            });
+        });
+
+        function resetProfileToDefault() {
+            if (confirm("Reset profile name and photo back to default (Rushi Patkal)?")) {
+                try {
+                    localStorage.removeItem('sf_admin_profile');
+                } catch (e) {}
+                currentProfilePhotoData = null;
+                applyProfileToUI(DEFAULT_PROFILE);
+                const modalEl = document.getElementById('profileModal');
+                if (modalEl && window.bootstrap) {
+                    const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                    if (modalInstance) modalInstance.hide();
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const activeTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+            updateThemeIcon(activeTheme);
+            loadProfile();
+
+            const nameInput = document.getElementById('profileNameInput');
+            if (nameInput) {
+                nameInput.addEventListener('input', function(e) {
+                    if (!currentProfilePhotoData) {
+                        const initials = getInitials(e.target.value);
+                        const modalInitials = document.getElementById('modalAvatarInitials');
+                        if (modalInitials) modalInitials.textContent = initials;
+                    }
+                });
+            }
+        });
+
+        // =========================================================================
+        // SINGLE-TAB STRICT SECURITY ENGINE (AUTO-LOGOUT ON TAB SWITCH)
+        // =========================================================================
+        (function() {
+            // Instantly clear any old storage flags so login never gets blocked
+            try {
+                localStorage.removeItem('sf_auto_logout_reason');
+                sessionStorage.removeItem('sf_tab_switched');
+            } catch(e) {}
+
+            let isInternalNavigation = false;
+            let tabSwitchedAway = false;
+            const pageLoadedTime = Date.now();
+
+            // 1. Detect and flag intentional internal navigation (links, menus, pagination)
+            document.addEventListener('click', function(e) {
+                const link = e.target.closest('a');
+                if (!link) return;
+
+                const href = link.getAttribute('href');
+                if (!href) return;
+
+                // Ignore modals, dropdown triggers, hash anchors, javascript calls
+                if (href.startsWith('#') || href.startsWith('javascript:')) {
+                    return;
+                }
+
+                try {
+                    const targetUrl = new URL(link.href, window.location.origin);
+                    if (targetUrl.origin === window.location.origin && link.target !== '_blank') {
+                        isInternalNavigation = true;
+                        setTimeout(() => { isInternalNavigation = false; }, 6000);
+                    }
+                } catch (err) {}
+            }, true);
+
+            // 2. Detect and flag form submissions (search filters, algorithm picker)
+            document.addEventListener('submit', function() {
+                isInternalNavigation = true;
+                setTimeout(() => { isInternalNavigation = false; }, 6000);
+            }, true);
+
+            // 3. Prevent false positives on print or native file picker
+            window.addEventListener('beforeprint', function() {
+                isInternalNavigation = true;
+            });
+            window.addEventListener('afterprint', function() {
+                setTimeout(() => { isInternalNavigation = false; }, 1000);
+            });
+
+            // 4. Page Visibility Listener (Pure Tab-Switching Detection)
+            document.addEventListener('visibilitychange', function() {
+                // When tab is hidden (user switched to another tab or minimized window)
+                if (document.visibilityState === 'hidden') {
+                    // Only trigger if it is NOT internal navigation AND at least 2.5s have elapsed since page load
+                    if (!isInternalNavigation && (Date.now() - pageLoadedTime > 2500)) {
+                        tabSwitchedAway = true;
+                        
+                        // Send beacon or async fetch to immediately destroy backend session
+                        const logoutUrl = '/logout/?reason=tab_switch';
+                        if (navigator.sendBeacon) {
+                            navigator.sendBeacon(logoutUrl);
+                        } else {
+                            fetch(logoutUrl, {
+                                method: 'POST',
+                                keepalive: true,
+                                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                            }).catch(() => {});
+                        }
+                    }
+                } 
+                // When user switches back to this tab
+                else if (document.visibilityState === 'visible') {
+                    if (tabSwitchedAway) {
+                        tabSwitchedAway = false;
+                        window.location.replace('/login/?reason=tab_switch');
+                    }
+                }
+            });
+        })();
+    </script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

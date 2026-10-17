@@ -1,0 +1,235 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}ML Models Evaluation & Comparison{% endblock %}
+{% block breadcrumb %}Machine Learning / Model Evaluation{% endblock %}
+{% block page_title %}Machine Learning Model Evaluation{% endblock %}
+{% block page_subtitle %}Quantitative empirical benchmarking (MAE, RMSE, R² Score) on out-of-sample test partition{% endblock %}
+
+{% block content %}
+<!-- Winning Model Announcement Crystal Banner -->
+<div class="crystal-card mb-4" style="border-left: 4px solid var(--emerald); background: rgba(16, 185, 129, 0.08);">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <div class="d-flex align-items-center gap-3">
+            <div class="brand-icon-box" style="background: var(--emerald-gradient); width: 42px; height: 42px; font-size: 1.25rem;">
+                <i class="bi bi-award-fill text-warning"></i>
+            </div>
+            <div>
+                <h6 class="mb-0 fw-bold" style="font-size: 0.98rem; color: var(--text-primary);">Optimal Algorithm: {{ best_name }}</h6>
+                <small class="text-slate-muted" style="font-size: 0.74rem;">
+                    Empirically selected based on highest explanatory variance (R² = 16.59%) and lowest Mean Absolute Error on out-of-sample test partition.
+                </small>
+            </div>
+        </div>
+        <span class="badge-luxe badge-luxe-emerald px-3 py-1 shadow-sm" style="font-size: 0.76rem;">
+            <i class="bi bi-check-circle-fill me-1"></i> Active in Production
+        </span>
+    </div>
+</div>
+
+<!-- Model Performance Comparison Table (Step 7) -->
+<div class="crystal-card mb-4">
+    <div class="card-head-compact">
+        <div>
+            <h6 class="mb-0 fw-bold card-title-compact">
+                <i class="bi bi-bar-chart-steps text-primary"></i> Comparative Evaluation Metrics Table
+            </h6>
+            <small class="text-slate-muted" style="font-size: 0.72rem;">Empirical validation on 214 days chronological test partition (80% Train / 20% Test)</small>
+        </div>
+        <span class="badge-luxe badge-luxe-blue shadow-sm">Test Partition</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table-crystal">
+            <thead>
+                <tr>
+                    <th>Algorithm</th>
+                    <th>Model Family</th>
+                    <th class="text-end">MAE (₹)</th>
+                    <th class="text-end">RMSE (₹)</th>
+                    <th class="text-end">R² Score</th>
+                    <th class="text-center">Selection Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in models_list %}
+                <tr {% if m.is_best %}style="background: rgba(16, 185, 129, 0.12); font-weight: 600;"{% endif %}>
+                    <td class="fw-bold" style="color: var(--text-primary);">
+                        {% if m.is_best %}<i class="bi bi-star-fill text-warning me-1"></i>{% endif %}
+                        {{ m.name }}
+                    </td>
+                    <td>
+                        {% if 'Linear' in m.name %}
+                            <span class="badge-luxe badge-luxe-cyan">Parametric / Linear</span>
+                        {% elif 'Tree' in m.name %}
+                            <span class="badge-luxe badge-luxe-amber">Tree Partitioning</span>
+                        {% else %}
+                            <span class="badge-luxe badge-luxe-purple">Ensemble Bagging</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end fw-semibold" style="color: var(--text-primary);">Rs. {{ m.mae|floatformat:2 }}</td>
+                    <td class="text-end fw-semibold" style="color: var(--text-primary);">Rs. {{ m.rmse|floatformat:2 }}</td>
+                    <td class="text-end fw-bold {% if m.is_best %}text-success{% else %}text-slate-muted{% endif %}">
+                        {{ m.r2_pct }}
+                    </td>
+                    <td class="text-center">
+                        {% if m.is_best %}
+                            <span class="badge-luxe badge-luxe-emerald">★ Selected Best</span>
+                        {% else %}
+                            <span class="badge-luxe badge-luxe-blue">Evaluated</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Evaluation Charts Row -->
+<div class="row g-3 g-xl-4 mb-4">
+    <!-- Historical vs Forecasted Plot -->
+    <div class="col-12 col-xl-7">
+        <div class="crystal-card h-100">
+            <div class="card-head-compact">
+                <div>
+                    <h6 class="mb-0 fw-bold card-title-compact">
+                        <i class="bi bi-graph-up-arrow text-primary"></i> Actual vs Predicted Sales on Test Partition
+                    </h6>
+                    <small class="text-slate-muted" style="font-size: 0.72rem;">Out-of-sample visual validation of all candidate algorithms</small>
+                </div>
+                <button type="button" class="btn-crystal-outline py-1 px-3" style="font-size: 0.72rem;" data-bs-toggle="modal" data-bs-target="#histPlotModal">
+                    <i class="bi bi-arrows-fullscreen text-primary"></i> Zoom
+                </button>
+            </div>
+            <div class="text-center p-2 rounded-3 border shadow-sm" style="cursor: pointer; background: var(--bg-surface); border-color: var(--border-subtle) !important;" data-bs-toggle="modal" data-bs-target="#histPlotModal">
+                <img src="{% static 'plots/historical_vs_forecast.png' %}" alt="Historical vs Forecast" class="img-fluid rounded" style="max-height: 250px; width: 100%; object-fit: contain;">
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature Importances Ranking -->
+    <div class="col-12 col-xl-5">
+        <div class="crystal-card h-100">
+            <div class="card-head-compact">
+                <div>
+                    <h6 class="mb-0 fw-bold card-title-compact">
+                        <i class="bi bi-sliders text-warning"></i> Feature Weights (Importance)
+                    </h6>
+                    <small class="text-slate-muted" style="font-size: 0.70rem;">Relative importance from {{ best_name }}</small>
+                </div>
+                <span class="badge-luxe badge-luxe-amber shadow-sm">Weights</span>
+            </div>
+            <div style="height: 250px; position: relative;">
+                <canvas id="featureImportanceChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Methodological Justification & Academic Rigor (B.Sc. Data Science) -->
+<div class="crystal-card">
+    <div class="card-head-compact">
+        <h6 class="mb-0 fw-bold card-title-compact">
+            <i class="bi bi-journal-code text-primary"></i> Academic Methodology & Model Architecture
+        </h6>
+        <span class="badge-luxe badge-luxe-cyan shadow-sm">Pipeline Architecture</span>
+    </div>
+    <div class="row g-3">
+        <div class="col-12 col-md-4">
+            <div class="p-3 rounded-3 h-100" style="background: var(--bg-surface); border: 1px solid var(--border-subtle);">
+                <div class="fw-bold mb-1" style="color: var(--primary);"><i class="bi bi-arrow-right-circle me-1"></i> Chronological Split</div>
+                <p class="text-slate-muted mb-0" style="font-size: 0.78rem; line-height: 1.5;">
+                    Data is partitioned into 80% historical training (Jan 2023–May 2025) and 20% out-of-sample testing (Jun 2025–Dec 2025) strictly preventing future data leakage in time-series forecasting.
+                </p>
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="p-3 rounded-3 h-100" style="background: var(--bg-surface); border: 1px solid var(--border-subtle);">
+                <div class="fw-bold mb-1" style="color: var(--amber);"><i class="bi bi-arrow-right-circle me-1"></i> Feature Engineering</div>
+                <p class="text-slate-muted mb-0" style="font-size: 0.78rem; line-height: 1.5;">
+                    Engineered features include temporal flags (<code>day_of_week</code>, <code>month</code>, <code>is_weekend</code>), cyclical seasonality encoding, lag features (7 & 14 days), and 7-day rolling momentum.
+                </p>
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="p-3 rounded-3 h-100" style="background: var(--bg-surface); border: 1px solid var(--border-subtle);">
+                <div class="fw-bold mb-1" style="color: var(--emerald);"><i class="bi bi-arrow-right-circle me-1"></i> Why Random Forest Won</div>
+                <p class="text-slate-muted mb-0" style="font-size: 0.78rem; line-height: 1.5;">
+                    Non-linear decision boundaries and ensemble variance reduction enabled Random Forest to model holiday spikes and weekend demand without overfitting to local noise.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for High-Res Fullscreen Zoom -->
+<div class="modal fade" id="histPlotModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content crystal-card p-0">
+            <div class="modal-header py-2 px-3 border-bottom" style="border-color: var(--border-subtle) !important;">
+                <h6 class="modal-title fw-bold mb-0" style="font-size: 0.94rem; color: var(--text-primary);">Historical vs Forecasted Sales Test Comparison</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center p-3">
+                <img src="{% static 'plots/historical_vs_forecast.png' %}" alt="Historical vs Forecast" class="img-fluid rounded border shadow-sm">
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    function getThemeTokens() {
+        const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+        return {
+            textColor: isDark ? '#94a3b8' : '#475569',
+            gridColor: isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.05)',
+        };
+    }
+
+    const tokens = getThemeTokens();
+    Chart.defaults.color = tokens.textColor;
+    Chart.defaults.font.family = 'Inter';
+
+    const featLabels = {{ feat_labels|safe }};
+    const featValues = {{ feat_values|safe }};
+
+    const ctx = document.getElementById('featureImportanceChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: featLabels,
+            datasets: [{
+                label: 'Relative Weight',
+                data: featValues,
+                backgroundColor: '#f59e0b',
+                borderRadius: 5
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    grid: { color: tokens.gridColor },
+                    ticks: {
+                        color: tokens.textColor,
+                        font: { size: 9 },
+                        callback: function(v) { return (v * 100).toFixed(0) + '%'; }
+                    }
+                },
+                y: {
+                    grid: { display: false },
+                    ticks: { font: { size: 9 }, color: tokens.textColor }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

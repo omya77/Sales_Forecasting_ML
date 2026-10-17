@@ -1,0 +1,139 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}Exploratory Data Analysis (EDA){% endblock %}
+{% block breadcrumb %}Analytics / Exploratory Data Analysis{% endblock %}
+{% block page_title %}Exploratory Data Analysis (EDA){% endblock %}
+{% block page_subtitle %}Statistical profiling, seasonality decomposition, and empirical retail demand characteristics{% endblock %}
+
+{% block content %}
+<!-- Preprocessing Verification Banner -->
+<div class="crystal-card mb-4" style="border-left: 4px solid var(--emerald); background: rgba(16, 185, 129, 0.08);">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <div class="d-flex align-items-center gap-3">
+            <div class="brand-icon-box" style="background: var(--emerald-gradient); width: 42px; height: 42px; font-size: 1.25rem;">
+                <i class="bi bi-shield-check"></i>
+            </div>
+            <div>
+                <h6 class="mb-0 fw-bold" style="font-size: 0.98rem; color: var(--text-primary);">Dataset Preprocessing & Integrity Verification: 100% Passed</h6>
+                <small class="text-slate-muted" style="font-size: 0.74rem;">
+                    10,219 records checked across 15 parameters. Missing values: <strong style="color: var(--emerald);">0 (0.00%)</strong> • Duplicates: <strong style="color: var(--emerald);">0</strong> • Outlier bounds verified via IQR.
+                </small>
+            </div>
+        </div>
+        <span class="badge-luxe badge-luxe-emerald px-3 py-1 shadow-sm" style="font-size: 0.76rem;">
+            <i class="bi bi-check2-all me-1"></i> Cleaned & Production-Ready
+        </span>
+    </div>
+</div>
+
+<!-- Visualizations Grid (All 6 Required Charts from Synopsis) -->
+<div class="row g-3 g-xl-4 mb-4">
+    {% for plot in plots %}
+    <div class="col-12 col-md-6">
+        <div class="crystal-card h-100 d-flex flex-column justify-content-between">
+            <div>
+                <div class="card-head-compact">
+                    <h6 class="mb-0 fw-bold card-title-compact">
+                        <i class="bi bi-bar-chart-line-fill text-primary"></i> {{ plot.title }}
+                    </h6>
+                    <button type="button" class="btn-crystal-outline py-1 px-3" style="font-size: 0.72rem;" data-bs-toggle="modal" data-bs-target="#plotModal{{ plot.id }}">
+                        <i class="bi bi-arrows-fullscreen text-primary"></i> Zoom
+                    </button>
+                </div>
+                
+                <div class="p-2 text-center rounded-3 mb-3 border shadow-sm" style="cursor: pointer; background: var(--bg-surface); border-color: var(--border-subtle) !important;" data-bs-toggle="modal" data-bs-target="#plotModal{{ plot.id }}">
+                    <img src="{% static 'plots/' %}{{ plot.filename }}" alt="{{ plot.title }}" class="img-fluid rounded" style="max-height: 240px; width: 100%; object-fit: contain;">
+                </div>
+            </div>
+            
+            <p class="text-slate mb-0 px-1" style="font-size: 0.78rem; line-height: 1.55;">
+                {{ plot.description }}
+            </p>
+        </div>
+    </div>
+
+    <!-- Modal for High-Resolution Fullscreen Zoom -->
+    <div class="modal fade" id="plotModal{{ plot.id }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content crystal-card p-0">
+                <div class="modal-header py-2 px-3 border-bottom" style="border-color: var(--border-subtle) !important;">
+                    <h6 class="modal-title fw-bold mb-0" style="font-size: 0.94rem; color: var(--text-primary);">{{ plot.title }}</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center p-3">
+                    <img src="{% static 'plots/' %}{{ plot.filename }}" alt="{{ plot.title }}" class="img-fluid rounded border shadow-sm">
+                    <p class="text-slate-muted mt-3 mb-0 text-start" style="font-size: 0.82rem;">{{ plot.description }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Statistical Summary Table -->
+<div class="crystal-card">
+    <div class="card-head-compact">
+        <h6 class="mb-0 fw-bold card-title-compact">
+            <i class="bi bi-calculator text-primary me-1"></i> Statistical Dispersion & Moments Matrix
+        </h6>
+        <span class="badge-luxe badge-luxe-blue shadow-sm">Descriptive Analytics</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table-crystal">
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th class="text-end">Total Sales (Rs.)</th>
+                    <th class="text-end">Quantity</th>
+                    <th class="text-end">Unit Price (Rs.)</th>
+                    <th class="text-end">Discount (%)</th>
+                    <th class="text-end">Profit (Rs.)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="fw-bold" style="color: var(--text-primary);">Population Count</td>
+                    <td class="text-end">10,219</td>
+                    <td class="text-end">10,219</td>
+                    <td class="text-end">10,219</td>
+                    <td class="text-end">10,219</td>
+                    <td class="text-end">10,219</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold" style="color: var(--text-primary);">Mean Average</td>
+                    <td class="text-end fw-bold" style="color: var(--cyan);">Rs. 5,404.09</td>
+                    <td class="text-end">1.78</td>
+                    <td class="text-end">Rs. 3,462.15</td>
+                    <td class="text-end">6.82%</td>
+                    <td class="text-end fw-semibold" style="color: var(--emerald);">Rs. 1,695.87</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold" style="color: var(--text-primary);">Minimum Value</td>
+                    <td class="text-end">Rs. 315.00</td>
+                    <td class="text-end">1</td>
+                    <td class="text-end">Rs. 420.00</td>
+                    <td class="text-end">0.00%</td>
+                    <td class="text-end">Rs. 50.00</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold" style="color: var(--text-primary);">Maximum Value</td>
+                    <td class="text-end">Rs. 79,797.15</td>
+                    <td class="text-end">5</td>
+                    <td class="text-end">Rs. 27,999.00</td>
+                    <td class="text-end">25.00%</td>
+                    <td class="text-end">Rs. 24,147.15</td>
+                </tr>
+                <tr style="background: rgba(99, 102, 241, 0.12);">
+                    <td class="fw-bold" style="color: var(--primary);">Aggregate Sum</td>
+                    <td class="text-end fw-bold" style="color: var(--primary);">Rs. 55,224,401.84</td>
+                    <td class="text-end fw-bold">18,210 Units</td>
+                    <td class="text-end fw-bold">—</td>
+                    <td class="text-end fw-bold">—</td>
+                    <td class="text-end fw-bold" style="color: var(--emerald);">Rs. 17,330,101.84</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

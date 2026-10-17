@@ -1,0 +1,1096 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SalesForecast AI | Sign In</title>
+    
+    <!-- Brand Favicons -->
+    <link rel="icon" type="image/svg+xml" href="{% static 'img/favicon.svg' %}?v=20261017">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'img/favicon-32x32.png' %}?v=20261017">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'img/favicon-16x16.png' %}?v=20261017">
+    <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}?v=20261017">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'img/apple-touch-icon.png' %}?v=20261017">
+    <meta name="theme-color" content="#4f46e5">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5.3 & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}?v=20261017_validation_suite_v16">
+    
+    <style>
+        /* --------------------------------------------------------------------------
+           1. NO-SCROLL STRICT 100VH VIEWPORT
+           -------------------------------------------------------------------------- */
+        html, body {
+            height: 100vh !important;
+            max-height: 100vh !important;
+            overflow: hidden !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .login-animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+            background-color: #060913;
+        }
+
+        [data-theme="light"] .login-animated-bg {
+            background-color: #f8fafc;
+        }
+
+        /* Subtle Geometric Tech Matrix Grid */
+        .tech-grid-overlay {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+            background-size: 48px 48px;
+            mask-image: radial-gradient(circle at 50% 50%, black 50%, transparent 90%);
+            -webkit-mask-image: radial-gradient(circle at 50% 50%, black 50%, transparent 90%);
+        }
+
+        [data-theme="light"] .tech-grid-overlay {
+            background-image: 
+                linear-gradient(rgba(99, 102, 241, 0.07) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(99, 102, 241, 0.07) 1px, transparent 1px);
+        }
+
+        /* Floating Aurora Orbs */
+        .aurora-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: 0.60;
+            mix-blend-mode: screen;
+            will-change: transform;
+        }
+
+        [data-theme="light"] .aurora-orb {
+            opacity: 0.30;
+            mix-blend-mode: multiply;
+        }
+
+        .orb-1 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, #6366f1 0%, rgba(99, 102, 241, 0) 70%);
+            top: -140px;
+            left: -120px;
+            animation: orbFloat1 24s ease-in-out infinite alternate;
+        }
+
+        .orb-2 {
+            width: 520px;
+            height: 520px;
+            background: radial-gradient(circle, #06b6d4 0%, rgba(6, 182, 212, 0) 70%);
+            bottom: -160px;
+            right: -140px;
+            animation: orbFloat2 28s ease-in-out infinite alternate;
+        }
+
+        .orb-3 {
+            width: 420px;
+            height: 420px;
+            background: radial-gradient(circle, #8b5cf6 0%, rgba(139, 92, 246, 0) 70%);
+            top: 25%;
+            right: 8%;
+            animation: orbFloat3 20s ease-in-out infinite alternate;
+        }
+
+        .orb-4 {
+            width: 440px;
+            height: 440px;
+            background: radial-gradient(circle, #10b981 0%, rgba(16, 185, 129, 0) 70%);
+            bottom: 5%;
+            left: 10%;
+            animation: orbFloat4 26s ease-in-out infinite alternate;
+        }
+
+        @keyframes orbFloat1 {
+            0% { transform: translate3d(0, 0, 0) scale(1); }
+            50% { transform: translate3d(140px, 90px, 0) scale(1.15); }
+            100% { transform: translate3d(60px, 160px, 0) scale(0.92); }
+        }
+
+        @keyframes orbFloat2 {
+            0% { transform: translate3d(0, 0, 0) scale(1); }
+            50% { transform: translate3d(-120px, -110px, 0) scale(1.12); }
+            100% { transform: translate3d(-70px, -50px, 0) scale(0.95); }
+        }
+
+        @keyframes orbFloat3 {
+            0% { transform: translate3d(0, 0, 0) scale(1); }
+            50% { transform: translate3d(-90px, 120px, 0) scale(1.18); }
+            100% { transform: translate3d(60px, -70px, 0) scale(0.90); }
+        }
+
+        @keyframes orbFloat4 {
+            0% { transform: translate3d(0, 0, 0) scale(1); }
+            50% { transform: translate3d(110px, -80px, 0) scale(1.10); }
+            100% { transform: translate3d(-60px, 60px, 0) scale(1.18); }
+        }
+
+        #particleCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.65;
+            pointer-events: none;
+        }
+
+        /* --------------------------------------------------------------------------
+           2. TOP DOCK NAVIGATION BAR
+           -------------------------------------------------------------------------- */
+        .top-nav-dock {
+            position: fixed;
+            top: 16px;
+            left: 24px;
+            right: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 40;
+            pointer-events: none;
+        }
+
+        .top-dock-left, .top-dock-right {
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .system-telemetry-pill {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: var(--radius-pill);
+            padding: 5px 14px;
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        [data-theme="light"] .system-telemetry-pill {
+            background: rgba(255, 255, 255, 0.85);
+            border-color: rgba(99, 102, 241, 0.2);
+            color: #334155;
+            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.12);
+        }
+
+        .theme-toggle-dock-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-sm);
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            font-size: 0.95rem;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+        }
+
+        [data-theme="light"] .theme-toggle-dock-btn {
+            background: rgba(255, 255, 255, 0.85);
+            border-color: rgba(99, 102, 241, 0.2);
+            color: #4f46e5;
+            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.12);
+        }
+
+        .theme-toggle-dock-btn:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35);
+        }
+
+        /* --------------------------------------------------------------------------
+           3. DUAL COCKPIT CONTAINER (COMPACT ZERO-SCROLL)
+           -------------------------------------------------------------------------- */
+        .login-viewport {
+            height: 100vh;
+            max-height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .cockpit-glow-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        /* Ambient Outer Pulsing Aura */
+        .cockpit-glow-wrapper::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 26px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.35), rgba(6, 182, 212, 0.2), rgba(168, 85, 247, 0.35));
+            filter: blur(18px);
+            z-index: 0;
+            opacity: 0.60;
+            animation: auraPulse 6s ease-in-out infinite alternate;
+        }
+
+        @keyframes auraPulse {
+            0% { opacity: 0.40; filter: blur(16px); }
+            100% { opacity: 0.75; filter: blur(24px); }
+        }
+
+        .login-dual-cockpit {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            background: rgba(15, 23, 42, 0.88);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 22px;
+            box-shadow: 0 30px 80px -15px rgba(0, 0, 0, 0.85), 0 0 45px rgba(99, 102, 241, 0.18);
+            overflow: hidden;
+            display: flex;
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+        }
+
+        [data-theme="light"] .login-dual-cockpit {
+            background: rgba(255, 255, 255, 0.94);
+            border-color: rgba(99, 102, 241, 0.22);
+            box-shadow: 0 25px 70px -15px rgba(99, 102, 241, 0.22);
+        }
+
+        /* Left Showcase Panel */
+        .login-showcase-panel {
+            flex: 1.15;
+            background: linear-gradient(155deg, rgba(30, 41, 59, 0.72) 0%, rgba(15, 23, 42, 0.95) 100%);
+            border-right: 1px solid var(--border-subtle);
+            padding: 28px 32px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        [data-theme="light"] .login-showcase-panel {
+            background: linear-gradient(155deg, #f8fafc 0%, #eef2ff 100%);
+        }
+
+        /* Hero Gradient Title */
+        .hero-gradient-title {
+            font-size: 1.30rem;
+            font-weight: 800;
+            line-height: 1.25;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, #ffffff 40%, #a5b4fc 80%, #38bdf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        [data-theme="light"] .hero-gradient-title {
+            background: linear-gradient(135deg, #0f172a 35%, #4338ca 80%, #0284c7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Bento Feature Pillars */
+        .showcase-bento-item {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 10px 14px;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .showcase-bento-item:hover {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: rgba(99, 102, 241, 0.45);
+            transform: translateX(3px);
+        }
+
+        [data-theme="light"] .showcase-bento-item {
+            background: #ffffff;
+            border-color: rgba(0, 0, 0, 0.08);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03);
+        }
+
+        [data-theme="light"] .showcase-bento-item:hover {
+            background: #ffffff !important;
+            border-color: rgba(99, 102, 241, 0.5) !important;
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.14) !important;
+        }
+
+        /* Right Form Panel */
+        .login-form-panel {
+            flex: 1;
+            padding: 28px 34px;
+            background: transparent;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* --------------------------------------------------------------------------
+           4. FORM INPUTS & HIGH-CONTRAST READABILITY
+           -------------------------------------------------------------------------- */
+        .login-input-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .login-input-wrap .field-icon {
+            position: absolute;
+            left: 14px;
+            color: #818cf8 !important;
+            font-size: 1rem;
+            pointer-events: none;
+            transition: color 0.2s ease;
+            z-index: 3;
+        }
+
+        .login-input-wrap .form-control {
+            padding-left: 42px !important;
+            padding-right: 42px !important;
+            height: 44px;
+            font-size: 0.88rem;
+            border-radius: var(--radius-md);
+            background: rgba(15, 23, 42, 0.75) !important;
+            border: 1px solid var(--border-subtle);
+            color: #ffffff !important;
+            transition: all 0.2s ease;
+        }
+
+        [data-theme="light"] .login-input-wrap .form-control {
+            background: #ffffff !important;
+            color: #0f172a !important;
+            border-color: #cbd5e1 !important;
+        }
+
+        .login-input-wrap .form-control:focus {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.35) !important;
+            background: rgba(15, 23, 42, 0.92) !important;
+            outline: none;
+        }
+
+        [data-theme="light"] .login-input-wrap .form-control:focus {
+            background: #ffffff !important;
+            border-color: var(--primary) !important;
+        }
+
+        .login-input-wrap .form-control::placeholder,
+        .login-input-wrap .form-control::-webkit-input-placeholder {
+            color: #cbd5e1 !important;
+            opacity: 1 !important;
+            font-size: 0.86rem !important;
+            font-weight: 500 !important;
+            -webkit-text-fill-color: #cbd5e1 !important;
+        }
+
+        [data-theme="light"] .login-input-wrap .form-control::placeholder,
+        [data-theme="light"] .login-input-wrap .form-control::-webkit-input-placeholder {
+            color: #64748b !important;
+            opacity: 1 !important;
+            -webkit-text-fill-color: #64748b !important;
+        }
+
+        .login-input-wrap .pw-toggle-btn {
+            position: absolute;
+            right: 14px;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: color 0.2s ease;
+            user-select: none;
+            z-index: 3;
+        }
+
+        .login-input-wrap .pw-toggle-btn:hover {
+            color: var(--primary);
+        }
+
+        /* --------------------------------------------------------------------------
+           5. SHIMMER CTA SUBMIT BUTTON
+           -------------------------------------------------------------------------- */
+        .btn-login-submit {
+            position: relative;
+            overflow: hidden;
+            height: 44px;
+            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #7c3aed 100%);
+            color: #ffffff !important;
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 0.88rem;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            box-shadow: 0 8px 24px -4px rgba(99, 102, 241, 0.55);
+            transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .btn-login-submit::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transform: skewX(-25deg);
+            animation: shimmerBeam 3.6s infinite;
+        }
+
+        @keyframes shimmerBeam {
+            0%, 40% { left: -100%; }
+            100% { left: 200%; }
+        }
+
+        .btn-login-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px -2px rgba(99, 102, 241, 0.70);
+            filter: brightness(1.10);
+        }
+
+        /* Security Alert Box */
+        .alert-security-shield {
+            background: rgba(245, 158, 11, 0.14);
+            border: 1px solid #f59e0b;
+            color: #fbbf24;
+            border-radius: 9px;
+            padding: 8px 12px;
+        }
+
+        [data-theme="light"] .alert-security-shield {
+            background: #fffbeb !important;
+            border-color: #fde68a !important;
+            color: #92400e !important;
+        }
+
+        [data-theme="light"] .alert-security-shield strong {
+            color: #b45309 !important;
+        }
+
+        /* --------------------------------------------------------------------------
+           RESPONSIVE BREAKPOINTS
+           -------------------------------------------------------------------------- */
+        @media (max-width: 991.98px) {
+            html, body {
+                height: auto !important;
+                overflow-y: auto !important;
+            }
+            .login-viewport {
+                height: auto !important;
+                min-height: 100vh !important;
+                padding: 60px 14px 20px 14px;
+            }
+            .login-dual-cockpit {
+                flex-direction: column;
+                max-width: 480px;
+                border-radius: 20px;
+            }
+            .login-showcase-panel {
+                border-right: none;
+                border-bottom: 1px solid var(--border-subtle);
+                padding: 24px 20px;
+            }
+            .login-form-panel {
+                padding: 24px 20px;
+            }
+            .top-nav-dock {
+                top: 12px;
+                left: 12px;
+                right: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ======================================================================
+         1. DYNAMIC ANIMATED CYBER-AURORA & CONSTELLATION PARTICLES
+         ====================================================================== -->
+    <div class="login-animated-bg">
+        <div class="aurora-orb orb-1"></div>
+        <div class="aurora-orb orb-2"></div>
+        <div class="aurora-orb orb-3"></div>
+        <div class="aurora-orb orb-4"></div>
+        <div class="tech-grid-overlay"></div>
+        <canvas id="particleCanvas"></canvas>
+    </div>
+
+    <!-- ======================================================================
+         2. TOP FLOATING DOCK (LIVE CLOCK, STATUS, THEME)
+         ====================================================================== -->
+    <div class="top-nav-dock">
+        <div class="top-dock-left">
+            <div class="system-telemetry-pill d-none d-sm-flex">
+                <span class="live-pulse-dot" style="width: 7px; height: 7px;"></span>
+                <span class="fw-bold" style="color: var(--text-primary);">ML Pipeline Online</span>
+                <span class="text-slate-muted">|</span>
+                <span id="liveClock" class="font-monospace" style="color: var(--cyan); font-weight: 600;">--:--:-- IST</span>
+            </div>
+        </div>
+
+        <div class="top-dock-right">
+            <button id="themeToggleBtn" class="theme-toggle-dock-btn shadow-sm" type="button" title="Toggle Dark / Light Theme" onclick="toggleTheme()">
+                <i class="bi bi-sun-fill" id="themeIcon"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- ======================================================================
+         3. MAIN FLOATING DUAL COCKPIT CONTAINER (COMPACT 100VH)
+         ====================================================================== -->
+    <div class="login-viewport">
+        <div class="cockpit-glow-wrapper">
+            <div class="login-dual-cockpit">
+                
+                <!-- ================================================================
+                     LEFT SHOWCASE PANEL (INTELLIGENCE & SYNOPSIS HIGHLIGHTS)
+                     ================================================================ -->
+                <div class="login-showcase-panel">
+                    <div>
+                        <!-- Top Brand Badge -->
+                        <div class="d-flex align-items-center mb-3" style="gap: 14px;">
+                            <div class="brand-icon-box flex-shrink-0" style="width: 40px; height: 40px; font-size: 1.2rem;">
+                                <i class="bi bi-cpu-fill"></i>
+                            </div>
+                            <div>
+                                <div class="d-flex align-items-center" style="gap: 8px;">
+                                    <span class="fw-bold" style="font-size: 1.08rem; color: var(--text-primary); letter-spacing: -0.02em;">SalesForecast</span>
+                                    <span class="badge" style="background: var(--primary-gradient); color: #fff; font-size: 0.62rem; padding: 2px 7px; border-radius: 6px;">AI PRO</span>
+                                </div>
+                                <small class="text-slate-muted d-block" style="font-size: 0.66rem; line-height: 1.2; margin-top: 2px;">Enterprise Retail Demand Portal</small>
+                            </div>
+                        </div>
+
+                        <!-- Hero Gradient Title & Abstract -->
+                        <h2 class="hero-gradient-title mb-2">
+                            Predict Future Retail Demand with Data Science
+                        </h2>
+                        <p class="text-slate-muted mb-3" style="font-size: 0.78rem; line-height: 1.5;">
+                            Multi-step recursive time-series forecasting, 15-parameter transactional intelligence, and empirical machine learning model benchmarking.
+                        </p>
+
+                        <!-- Bento Feature Pillars -->
+                        <div class="d-flex flex-column gap-2 mb-3">
+                            <!-- Pillar 1: MySQL Live Telemetry -->
+                            <div class="showcase-bento-item d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center" style="gap: 16px;">
+                                    <div class="kpi-icon-square flex-shrink-0" style="width: 38px; height: 38px; font-size: 1.05rem; border-color: rgba(16, 185, 129, 0.4) !important;">
+                                        <i class="bi bi-database-check text-emerald"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold" style="font-size: 0.82rem; color: var(--text-primary); line-height: 1.25; margin-bottom: 2px;">
+                                            10,219 Verified Transactions
+                                        </div>
+                                        <small class="text-slate-muted d-block" style="font-size: 0.67rem; line-height: 1.2;">MySQL 8.0 Relational • 15 Parameters Cleaned</small>
+                                    </div>
+                                </div>
+                                <span class="badge-luxe badge-luxe-emerald ms-2 flex-shrink-0" style="font-size: 0.64rem; padding: 3px 8px;">
+                                    <span class="live-pulse-dot" style="width: 5px; height: 5px;"></span> Verified
+                                </span>
+                            </div>
+
+                            <!-- Pillar 2: Random Forest Winner -->
+                            <div class="showcase-bento-item d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center" style="gap: 16px;">
+                                    <div class="kpi-icon-square flex-shrink-0" style="width: 38px; height: 38px; font-size: 1.05rem; border-color: rgba(245, 158, 11, 0.4) !important;">
+                                        <i class="bi bi-award-fill text-warning"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold" style="font-size: 0.82rem; color: var(--text-primary); line-height: 1.25; margin-bottom: 2px;">
+                                            Optimal Algorithm: Random Forest
+                                        </div>
+                                        <small class="text-slate-muted d-block" style="font-size: 0.67rem; line-height: 1.2;">
+                                            Benchmark Winner • R² Score = <span style="color: var(--amber); font-weight: 700;">88.42%</span>
+                                        </small>
+                                    </div>
+                                </div>
+                                <span class="badge-luxe badge-luxe-amber ms-2 flex-shrink-0" style="font-size: 0.64rem; padding: 3px 8px;">
+                                    Optimal
+                                </span>
+                            </div>
+
+                            <!-- Pillar 3: Multi-Step Forecasting -->
+                            <div class="showcase-bento-item d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center" style="gap: 16px;">
+                                    <div class="kpi-icon-square flex-shrink-0" style="width: 38px; height: 38px; font-size: 1.05rem; border-color: rgba(99, 102, 241, 0.4) !important;">
+                                        <i class="bi bi-graph-up-arrow text-primary"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold" style="font-size: 0.82rem; color: var(--text-primary); line-height: 1.25; margin-bottom: 2px;">
+                                            Dynamic 7 to 90 Days Horizon
+                                        </div>
+                                        <small class="text-slate-muted d-block" style="font-size: 0.67rem; line-height: 1.2;">Recursive projection with 95% Confidence Interval</small>
+                                    </div>
+                                </div>
+                                <span class="badge-luxe badge-luxe-blue ms-2 flex-shrink-0" style="font-size: 0.64rem; padding: 3px 8px;">
+                                    Real-Time
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Synopsis Certification Tag -->
+                    <div class="d-flex align-items-center justify-content-between pt-3 border-top flex-wrap" style="border-color: var(--border-subtle) !important; gap: 10px;">
+                        <div class="d-flex align-items-center" style="gap: 10px;">
+                            <i class="bi bi-mortarboard-fill text-primary" style="font-size: 1rem;"></i>
+                            <small class="text-slate-muted fw-semibold" style="font-size: 0.72rem;">B.Sc. Data Science Project Synopsis</small>
+                        </div>
+                        <span class="badge-luxe badge-luxe-purple" style="font-size: 0.64rem;">
+                            <i class="bi bi-shield-check me-1"></i> Production Pipeline
+                        </span>
+                    </div>
+                </div>
+
+                <!-- ================================================================
+                     RIGHT FORM PANEL (SECURE AUTHENTICATION GATEWAY)
+                     ================================================================ -->
+                <div class="login-form-panel">
+                    <div class="mb-3">
+                        <div class="d-inline-flex align-items-center gap-1 badge-luxe badge-luxe-cyan px-2 py-1 mb-2" style="font-size: 0.68rem;">
+                            <span class="live-pulse-dot" style="background: var(--cyan); width: 6px; height: 6px;"></span> Secure Admin Gateway
+                        </div>
+                        <h3 class="fw-bold mb-1" style="font-size: 1.35rem; color: var(--text-primary); letter-spacing: -0.025em;">
+                            Portal Authentication
+                        </h3>
+                        <p class="text-slate-muted mb-0" style="font-size: 0.76rem;">
+                            Sign in with authorized administrator credentials to proceed.
+                        </p>
+                    </div>
+
+                    <!-- Security Notification (If Auto-Logged Out Due to Tab Switch) -->
+                    {% if security_notice %}
+                    <div class="alert alert-security-shield mb-3 d-flex align-items-center gap-2 shadow-sm">
+                        <i class="bi bi-shield-exclamation fs-5 flex-shrink-0 text-warning"></i>
+                        <div>
+                            <strong class="d-block" style="font-size: 0.78rem;">Single-Tab Security Triggered</strong>
+                            <span style="opacity: 0.95; font-size: 0.72rem;">{{ security_notice }}</span>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Error Notification (If Invalid Credentials) -->
+                    {% if error_msg %}
+                    <div class="alert alert-danger py-2 px-3 mb-3 d-flex align-items-center gap-2" style="font-size: 0.76rem; background: rgba(244, 63, 94, 0.12); border: 1px solid var(--rose); color: var(--rose); border-radius: 9px;">
+                        <i class="bi bi-shield-x fs-6 flex-shrink-0"></i>
+                        <span>{{ error_msg }}</span>
+                    </div>
+                    {% endif %}
+
+                    <!-- Authentication Form (autocomplete="off" to prevent pre-fill) -->
+                    <form method="POST" action="{% url 'login' %}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}" id="loginForm" autocomplete="off" novalidate>
+                        {% csrf_token %}
+
+                        <!-- Username Field -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-slate-muted text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.8px;">
+                                <i class="bi bi-person-fill text-primary me-1"></i> Administrator Username
+                            </label>
+                            <div class="login-input-wrap">
+                                <i class="bi bi-person-badge field-icon"></i>
+                                <input type="text" id="usernameInput" name="username" class="form-control {% if field_errors.username %}is-invalid{% endif %}" placeholder="Enter your username" autocomplete="off" value="{{ username_val|default:'' }}" maxlength="60" aria-describedby="usernameFeedback">
+                            </div>
+                            <div class="invalid-feedback {% if field_errors.username %}d-flex{% endif %}" id="usernameFeedback">
+                                <i class="bi bi-exclamation-circle-fill"></i>
+                                <span id="usernameErrorText">{{ field_errors.username|default:"Administrator username is required (min 3 characters)." }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Password Field -->
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <label class="form-label fw-bold text-slate-muted text-uppercase mb-0" style="font-size: 0.68rem; letter-spacing: 0.8px;">
+                                    <i class="bi bi-shield-lock-fill text-primary me-1"></i> Security Key / Password
+                                </label>
+                                <span class="text-slate-muted" style="font-size: 0.65rem;"><i class="bi bi-lock-fill text-success"></i> Encrypted</span>
+                            </div>
+                            <div class="login-input-wrap">
+                                <i class="bi bi-key-fill field-icon"></i>
+                                <input type="password" id="passwordInput" name="password" class="form-control {% if field_errors.password %}is-invalid{% endif %}" placeholder="Enter your password" autocomplete="new-password" value="" maxlength="128" aria-describedby="passwordFeedback">
+                                <i class="bi bi-eye-slash pw-toggle-btn" id="togglePwBtn" onclick="togglePasswordVisibility()" title="Toggle password visibility"></i>
+                            </div>
+                            <div class="invalid-feedback {% if field_errors.password %}d-flex{% endif %}" id="passwordFeedback">
+                                <i class="bi bi-exclamation-circle-fill"></i>
+                                <span id="passwordErrorText">{{ field_errors.password|default:"Security key / password is required (min 4 characters)." }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Submit CTA Button -->
+                        <div class="mt-3.5">
+                            <button type="submit" class="btn btn-login-submit w-100 shadow-sm" id="submitBtn">
+                                <i class="bi bi-box-arrow-in-right"></i> Authenticate & Launch Portal
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Database & Security Telemetry Footer -->
+                    <div class="d-flex align-items-center justify-content-between mt-3.5 pt-2.5 border-top flex-wrap gap-2" style="border-color: var(--border-subtle) !important;">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="live-pulse-dot" style="width: 6px; height: 6px;"></div>
+                            <span class="text-slate-muted" style="font-size: 0.68rem;">Database: MySQL 8.0 Relational</span>
+                        </div>
+                        <span class="badge-luxe badge-luxe-emerald" style="font-size: 0.60rem; padding: 2px 7px;">
+                            <span class="live-pulse-dot" style="width: 5px; height: 5px;"></span> TLS Protected
+                        </span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================================
+         CONSTELLATION & THEME LOGIC
+         ====================================================================== -->
+    <script>
+        // Real-time IST Digital Clock in Top Dock
+        function updateLiveClock() {
+            const clockEl = document.getElementById('liveClock');
+            if (!clockEl) return;
+            const now = new Date();
+            const istTime = now.toLocaleTimeString('en-US', {
+                timeZone: 'Asia/Kolkata',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            });
+            clockEl.textContent = istTime + ' IST';
+        }
+        setInterval(updateLiveClock, 1000);
+        updateLiveClock();
+
+        // Strictly clear username and password on initial load to prevent browser auto-fill
+        function clearCredentials() {
+            const u = document.getElementById('usernameInput');
+            const p = document.getElementById('passwordInput');
+            {% if not field_errors and not error_msg %}
+            if (u) u.value = '';
+            {% endif %}
+            if (p) p.value = '';
+        }
+        document.addEventListener('DOMContentLoaded', clearCredentials);
+        window.addEventListener('load', clearCredentials);
+
+        // =========================================================================
+        // CLIENT-SIDE ENTERPRISE FORM VALIDATION ENGINE
+        // =========================================================================
+        function validateUsernameField() {
+            const uInput = document.getElementById('usernameInput');
+            const feedback = document.getElementById('usernameFeedback');
+            const errorText = document.getElementById('usernameErrorText');
+            if (!uInput || !feedback || !errorText) return true;
+            
+            const val = uInput.value.trim();
+            if (!val) {
+                uInput.classList.add('is-invalid');
+                uInput.classList.remove('is-valid');
+                errorText.textContent = 'Administrator username is required.';
+                feedback.classList.add('d-flex');
+                return false;
+            } else if (val.length < 3) {
+                uInput.classList.add('is-invalid');
+                uInput.classList.remove('is-valid');
+                errorText.textContent = 'Username must be at least 3 characters.';
+                feedback.classList.add('d-flex');
+                return false;
+            } else if (val.length > 60) {
+                uInput.classList.add('is-invalid');
+                uInput.classList.remove('is-valid');
+                errorText.textContent = 'Username cannot exceed 60 characters.';
+                feedback.classList.add('d-flex');
+                return false;
+            } else {
+                uInput.classList.remove('is-invalid');
+                uInput.classList.add('is-valid');
+                feedback.classList.remove('d-flex');
+                return true;
+            }
+        }
+
+        function validatePasswordField() {
+            const pInput = document.getElementById('passwordInput');
+            const feedback = document.getElementById('passwordFeedback');
+            const errorText = document.getElementById('passwordErrorText');
+            if (!pInput || !feedback || !errorText) return true;
+            
+            const val = pInput.value;
+            if (!val) {
+                pInput.classList.add('is-invalid');
+                pInput.classList.remove('is-valid');
+                errorText.textContent = 'Security key / password is required.';
+                feedback.classList.add('d-flex');
+                return false;
+            } else if (val.length < 4) {
+                pInput.classList.add('is-invalid');
+                pInput.classList.remove('is-valid');
+                errorText.textContent = 'Password must be at least 4 characters.';
+                feedback.classList.add('d-flex');
+                return false;
+            } else {
+                pInput.classList.remove('is-invalid');
+                pInput.classList.add('is-valid');
+                feedback.classList.remove('d-flex');
+                return true;
+            }
+        }
+
+        // Attach event listeners when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('loginForm');
+            const uInput = document.getElementById('usernameInput');
+            const pInput = document.getElementById('passwordInput');
+            const submitBtn = document.getElementById('submitBtn');
+
+            if (uInput) {
+                uInput.addEventListener('input', function() {
+                    if (uInput.classList.contains('is-invalid') || uInput.value.trim().length >= 3) {
+                        validateUsernameField();
+                    }
+                });
+            }
+
+            if (pInput) {
+                pInput.addEventListener('input', function() {
+                    if (pInput.classList.contains('is-invalid') || pInput.value.length >= 4) {
+                        validatePasswordField();
+                    }
+                });
+            }
+
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    const isUserValid = validateUsernameField();
+                    const isPassValid = validatePasswordField();
+
+                    if (!isUserValid || !isPassValid) {
+                        e.preventDefault();
+                        if (!isUserValid) {
+                            uInput.focus();
+                        } else {
+                            pInput.focus();
+                        }
+                        return false;
+                    }
+
+                    // On valid submission, show loading spinner to prevent duplicate requests
+                    if (submitBtn) {
+                        submitBtn.classList.add('btn-loading');
+                        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Authenticating Session...';
+                    }
+                });
+            }
+        });
+
+        // Password Visibility Toggle
+        function togglePasswordVisibility() {
+            const pwInput = document.getElementById('passwordInput');
+            const icon = document.getElementById('togglePwBtn');
+            if (pwInput.type === 'password') {
+                pwInput.type = 'text';
+                icon.className = 'bi bi-eye pw-toggle-btn text-primary';
+            } else {
+                pwInput.type = 'password';
+                icon.className = 'bi bi-eye-slash pw-toggle-btn';
+            }
+        }
+
+        // Dark / Light Theme Toggle Script
+        function updateThemeIcon(theme) {
+            const icon = document.getElementById('themeIcon');
+            if (!icon) return;
+            if (theme === 'light') {
+                icon.className = 'bi bi-moon-stars-fill text-primary';
+            } else {
+                icon.className = 'bi bi-sun-fill text-warning';
+            }
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('sf_theme', newTheme);
+            updateThemeIcon(newTheme);
+        }
+
+        // Lightweight Constellation Particle Network (Background Animation)
+        (function initConstellation() {
+            const canvas = document.getElementById('particleCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let width, height;
+            let particles = [];
+            const particleCount = 42;
+            let mouse = { x: -1000, y: -1000, active: false };
+
+            function resize() {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            }
+
+            window.addEventListener('resize', resize);
+            resize();
+
+            window.addEventListener('mousemove', function(e) {
+                mouse.x = e.clientX;
+                mouse.y = e.clientY;
+                mouse.active = true;
+            });
+
+            window.addEventListener('mouseleave', function() {
+                mouse.active = false;
+            });
+
+            class Particle {
+                constructor() {
+                    this.reset(true);
+                }
+                reset(initial) {
+                    this.x = Math.random() * width;
+                    this.y = initial ? Math.random() * height : height + 10;
+                    this.vx = (Math.random() - 0.5) * 0.45;
+                    this.vy = -(Math.random() * 0.4 + 0.15);
+                    this.radius = Math.random() * 1.6 + 0.9;
+                    this.alpha = Math.random() * 0.5 + 0.25;
+                }
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+
+                    if (mouse.active) {
+                        const dx = mouse.x - this.x;
+                        const dy = mouse.y - this.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 130) {
+                            this.x += (dx / dist) * 0.5;
+                            this.y += (dy / dist) * 0.5;
+                        }
+                    }
+
+                    if (this.x < 0 || this.x > width || this.y < -10) {
+                        this.reset(false);
+                    }
+                }
+                draw() {
+                    const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = isDark 
+                        ? `rgba(199, 210, 254, ${this.alpha})`
+                        : `rgba(99, 102, 241, ${this.alpha * 0.75})`;
+                    ctx.fill();
+                }
+            }
+
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+                const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+
+                // Connect particles to each other
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 110) {
+                            ctx.beginPath();
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            const lineAlpha = (1 - dist / 110) * 0.14;
+                            ctx.strokeStyle = isDark 
+                                ? `rgba(129, 140, 248, ${lineAlpha})`
+                                : `rgba(99, 102, 241, ${lineAlpha * 0.8})`;
+                            ctx.lineWidth = 0.8;
+                            ctx.stroke();
+                        }
+                    }
+
+                    // Connect to mouse if nearby
+                    if (mouse.active) {
+                        const mdx = particles[i].x - mouse.x;
+                        const mdy = particles[i].y - mouse.y;
+                        const mdist = Math.sqrt(mdx * mdx + mdy * mdy);
+                        if (mdist < 120) {
+                            ctx.beginPath();
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(mouse.x, mouse.y);
+                            const mAlpha = (1 - mdist / 120) * 0.22;
+                            ctx.strokeStyle = isDark 
+                                ? `rgba(6, 182, 212, ${mAlpha})`
+                                : `rgba(79, 70, 229, ${mAlpha})`;
+                            ctx.lineWidth = 0.9;
+                            ctx.stroke();
+                        }
+                    }
+                }
+
+                particles.forEach(p => {
+                    p.update();
+                    p.draw();
+                });
+
+                requestAnimationFrame(animate);
+            }
+
+            animate();
+        })();
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('sf_theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeIcon(savedTheme);
+
+            // Purge any stale tab-switch state flags
+            try {
+                localStorage.removeItem('sf_auto_logout_reason');
+                sessionStorage.removeItem('sf_auto_logout_reason');
+                sessionStorage.removeItem('sf_tab_switched');
+            } catch(e) {}
+        });
+    </script>
+</body>
+</html>

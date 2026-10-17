@@ -1,0 +1,339 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Interactive ML Sales Forecasting Lab{% endblock %}
+{% block breadcrumb %}Machine Learning / Sales Forecast{% endblock %}
+{% block page_title %}Machine Learning Forecasting Engine{% endblock %}
+{% block page_subtitle %}Multi-step recursive forward projection engine powered by trained regression pipelines{% endblock %}
+
+{% block content %}
+<!-- Print-Only Executive Demand Intelligence Header -->
+<div class="print-report-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-3">
+            <div style="width: 44px; height: 44px; border-radius: 10px; background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
+                <i class="bi bi-cpu-fill"></i>
+            </div>
+            <div>
+                <h3 class="fw-bold mb-0" style="color: #0f172a; font-size: 1.35rem; letter-spacing: -0.02em;">SalesForecast AI — Executive Demand Intelligence Report</h3>
+                <div style="color: #64748b; font-size: 0.82rem;">Empirical Machine Learning Production Engine • Time-Series Forecast Ledger</div>
+            </div>
+        </div>
+        <div class="text-end" style="font-size: 0.82rem; color: #475569; line-height: 1.4;">
+            <div><strong>Forecast Horizon:</strong> <span class="badge-luxe badge-luxe-blue">{{ selected_days }} Days Forward</span></div>
+            <div><strong>Production Algorithm:</strong> 
+                <span class="fw-bold" style="color: #1e1b4b;">
+                    {% if selected_model == 'linear_regression' %}Linear Regression
+                    {% elif selected_model == 'decision_tree_regression' %}Decision Tree
+                    {% else %}Random Forest (Optimal Benchmark){% endif %}
+                </span>
+            </div>
+            <div><strong>Report Generated:</strong> {% now "d M Y, h:i A" %}</div>
+        </div>
+    </div>
+</div>
+
+<!-- Forecasting Configuration Control Bar -->
+<div class="crystal-card mb-4 forecast-config-bar">
+    <div class="row align-items-center g-3">
+        <div class="col-12 col-md-5">
+            <label class="kpi-title mb-1 d-block"><i class="bi bi-clock-history me-1 text-primary"></i> Forecast Horizon</label>
+            <div class="d-flex gap-1 flex-wrap">
+                <a href="?days=7&model={{ selected_model }}" class="btn-crystal-outline flex-fill text-center forecast-horizon-btn {% if selected_days == 7 %}active{% endif %}">7 Days</a>
+                <a href="?days=14&model={{ selected_model }}" class="btn-crystal-outline flex-fill text-center forecast-horizon-btn {% if selected_days == 14 %}active{% endif %}">14 Days</a>
+                <a href="?days=30&model={{ selected_model }}" class="btn-crystal-outline flex-fill text-center forecast-horizon-btn {% if selected_days == 30 %}active{% endif %}">30 Days</a>
+                <a href="?days=60&model={{ selected_model }}" class="btn-crystal-outline flex-fill text-center forecast-horizon-btn {% if selected_days == 60 %}active{% endif %}">60 Days</a>
+                <a href="?days=90&model={{ selected_model }}" class="btn-crystal-outline flex-fill text-center forecast-horizon-btn {% if selected_days == 90 %}active{% endif %}">90 Days</a>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+            <label class="kpi-title mb-1 d-block"><i class="bi bi-cpu-fill me-1 text-primary"></i> Production Algorithm</label>
+            <form method="GET" action="{% url 'forecast' %}" id="modelForm">
+                <input type="hidden" name="days" value="{{ selected_days }}">
+                <select name="model" class="form-select form-crystal w-100 fw-semibold" onchange="document.getElementById('modelForm').submit();">
+                    <option value="best_model" {% if selected_model == 'best_model' %}selected{% endif %}>Best Model: Random Forest Regression (Top Accuracy)</option>
+                    <option value="random_forest_regression" {% if selected_model == 'random_forest_regression' %}selected{% endif %}>Random Forest Regression</option>
+                    <option value="decision_tree_regression" {% if selected_model == 'decision_tree_regression' %}selected{% endif %}>Decision Tree Regression</option>
+                    <option value="linear_regression" {% if selected_model == 'linear_regression' %}selected{% endif %}>Linear Regression</option>
+                </select>
+            </form>
+        </div>
+
+        <div class="col-12 col-md-3 text-md-end pt-1 pt-md-3">
+            <div class="d-flex gap-2 justify-content-md-end flex-wrap">
+                <a href="{% url 'forecast_pdf' %}?days={{ selected_days }}&model={{ selected_model }}" class="btn-crystal py-2 px-3 text-decoration-none d-inline-flex align-items-center justify-content-center flex-fill flex-md-grow-0" id="downloadPdfBtn" title="Instant Direct Download PDF File (No Printer Required)">
+                    <i class="bi bi-file-earmark-pdf-fill me-1" style="color: #f43f5e;"></i> Download PDF
+                </a>
+                <button type="button" class="btn-crystal-outline py-2 px-3 d-inline-flex align-items-center justify-content-center flex-fill flex-md-grow-0" onclick="exportReportPDF();" title="Print or Save via Browser Dialog">
+                    <i class="bi bi-printer me-1 text-primary"></i> Print
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Forecast Summary KPI Widgets -->
+<div class="row g-3 mb-4 kpi-row-print">
+    <div class="col-12 col-md-4">
+        <div class="kpi-compact">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="kpi-title"><i class="bi bi-stars text-primary me-1"></i> Projected Revenue</span>
+                <div class="kpi-icon-square">
+                    <i class="bi bi-stars"></i>
+                </div>
+            </div>
+            <div class="kpi-value-bright">
+                <span class="kpi-curr">Rs.</span>
+                <span class="kpi-val">{{ forecast.total_forecasted_sales|floatformat:2|intcomma }}</span>
+            </div>
+            <div class="kpi-footer-row">
+                <span class="badge-luxe badge-luxe-blue"><i class="bi bi-calendar-range"></i> {{ selected_days }} Days Horizon</span>
+                <span class="kpi-sub-figure">{{ forecast.start_forecast_date }} → {{ forecast.end_forecast_date }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-4">
+        <div class="kpi-compact">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="kpi-title"><i class="bi bi-calendar3 text-success me-1"></i> Daily Run-Rate</span>
+                <div class="kpi-icon-square">
+                    <i class="bi bi-calendar3"></i>
+                </div>
+            </div>
+            <div class="kpi-value-bright">
+                <span class="kpi-curr">Rs.</span>
+                <span class="kpi-val">{{ forecast.avg_daily_forecast|floatformat:2|intcomma }}</span>
+            </div>
+            <div class="kpi-footer-row">
+                <span class="badge-luxe badge-luxe-emerald"><i class="bi bi-check2-circle"></i> Projected Mean</span>
+                <span class="kpi-sub-figure">Avg per Day</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-4">
+        <div class="kpi-compact">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="kpi-title"><i class="bi bi-cpu-fill text-purple me-1"></i> Active Algorithm</span>
+                <div class="kpi-icon-square">
+                    <i class="bi bi-cpu-fill"></i>
+                </div>
+            </div>
+            <div class="kpi-value-bright" style="font-size: 1.25rem;">
+                {% if selected_model == 'linear_regression' %}
+                    Linear Regression
+                {% elif selected_model == 'decision_tree_regression' %}
+                    Decision Tree
+                {% else %}
+                    Random Forest <span class="badge-luxe badge-luxe-emerald ms-2">Optimal</span>
+                {% endif %}
+            </div>
+            <div class="kpi-footer-row">
+                <span class="badge-luxe badge-luxe-purple"><i class="bi bi-check2-circle"></i> Production Pipeline</span>
+                <a href="{% url 'models' %}" class="kpi-sub-figure text-primary text-decoration-none">Review Metrics &rarr;</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Forecast Trajectory Chart -->
+<div class="crystal-card mb-4 forecast-chart-card">
+    <div class="card-head-compact">
+        <div>
+            <div class="card-title-compact">
+                <i class="bi bi-graph-up text-primary"></i> Forecasted Sales Trajectory & 95% Confidence Interval
+            </div>
+            <small class="text-slate-muted" style="font-size: 0.68rem;">Recursive simulation predicting day-by-day consumer demand</small>
+        </div>
+        <div class="d-flex gap-2">
+            <span class="badge-luxe badge-luxe-blue">● Projected Mean</span>
+            <span class="badge-luxe badge-luxe-purple">--- 95% CI Bounds</span>
+        </div>
+    </div>
+    <div class="forecast-chart-container" style="height: 250px; position: relative;">
+        <canvas id="forecastChart"></canvas>
+        <img id="forecastChartPrintImg" alt="Forecast Sales Trajectory Chart" style="display: none; width: 100%; max-height: 240px; object-fit: contain;">
+    </div>
+</div>
+
+<!-- Daily Forecast Breakdown Table -->
+<div class="crystal-card">
+    <div class="card-head-compact">
+        <div>
+            <div class="card-title-compact">
+                <i class="bi bi-calendar4-week text-primary"></i> Chronological Forecast Schedule
+            </div>
+            <small class="text-slate-muted" style="font-size: 0.68rem;">Day-by-day simulated receipts with elasticity indicators</small>
+        </div>
+        <span class="badge-luxe badge-luxe-blue">
+            {{ forecast.daily_breakdown|length }} Days
+        </span>
+    </div>
+    <div class="table-responsive forecast-table-container">
+        <table class="table-crystal">
+            <thead>
+                <tr>
+                    <th>Day #</th>
+                    <th>Date</th>
+                    <th>Day</th>
+                    <th class="text-end">Projected Sales</th>
+                    <th class="text-end">Lower 95% CI</th>
+                    <th class="text-end">Upper 95% CI</th>
+                    <th class="text-center">Demand Signal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in forecast.daily_breakdown %}
+                <tr {% if row.is_weekend %}style="background: rgba(245, 158, 11, 0.08);"{% endif %}>
+                    <td><code class="fw-bold">Day {{ row.step }}</code></td>
+                    <td class="fw-bold" style="color: var(--text-primary);">{{ row.date }}</td>
+                    <td class="text-slate">{{ row.day_name }}</td>
+                    <td class="text-end fw-bold" style="color: var(--cyan);">Rs. {{ row.predicted_sales|floatformat:2 }}</td>
+                    <td class="text-end text-slate-muted">Rs. {{ row.lower_bound|floatformat:2 }}</td>
+                    <td class="text-end text-slate-muted">Rs. {{ row.upper_bound|floatformat:2 }}</td>
+                    <td class="text-center">
+                        {% if row.is_weekend %}
+                            <span class="badge-luxe badge-luxe-amber">
+                                <i class="bi bi-lightning-fill"></i> Weekend Peak
+                            </span>
+                        {% else %}
+                            <span class="badge-luxe badge-luxe-cyan">Weekday</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <!-- Print-Only Footer Stamp -->
+    <div class="print-footer-stamp">
+        SalesForecast AI PRO — Confidential Executive Report • Multi-Step Recursive Forecast • 100% Chronological Ledger Exported
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    function getThemeTokens() {
+        const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+        return {
+            textColor: isDark ? '#94a3b8' : '#475569',
+            gridColor: isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.05)',
+        };
+    }
+
+    const tokens = getThemeTokens();
+    Chart.defaults.color = tokens.textColor;
+    Chart.defaults.font.family = 'Inter';
+
+    const dates = {{ chart_dates|safe }};
+    const preds = {{ chart_preds|safe }};
+    const lower = {{ chart_lower|safe }};
+    const upper = {{ chart_upper|safe }};
+
+    const ctx = document.getElementById('forecastChart').getContext('2d');
+    const gradForecast = ctx.createLinearGradient(0, 0, 0, 240);
+    gradForecast.addColorStop(0, 'rgba(6, 182, 212, 0.35)');
+    gradForecast.addColorStop(1, 'rgba(6, 182, 212, 0.0)');
+
+    window.forecastChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: dates,
+            datasets: [
+                {
+                    label: 'Predicted Sales (Rs.)',
+                    data: preds,
+                    borderColor: '#06b6d4',
+                    backgroundColor: gradForecast,
+                    borderWidth: 2.4,
+                    fill: true,
+                    tension: 0.35,
+                    pointRadius: 2.5,
+                    pointHoverRadius: 5,
+                    pointBackgroundColor: '#06b6d4'
+                },
+                {
+                    label: 'Upper 95% Bound',
+                    data: upper,
+                    borderColor: 'rgba(148, 163, 184, 0.5)',
+                    borderDash: [3, 3],
+                    borderWidth: 1.4,
+                    fill: false,
+                    pointRadius: 0
+                },
+                {
+                    label: 'Lower 95% Bound',
+                    data: lower,
+                    borderColor: 'rgba(148, 163, 184, 0.5)',
+                    borderDash: [3, 3],
+                    borderWidth: 1.4,
+                    fill: false,
+                    pointRadius: 0
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                    titleColor: '#ffffff',
+                    bodyColor: '#e2e8f0',
+                    borderColor: 'rgba(255, 255, 255, 0.12)',
+                    borderWidth: 1,
+                    padding: 9,
+                    callbacks: {
+                        label: function(c) {
+                            return c.dataset.label + ': Rs. ' + Number(c.raw).toLocaleString('en-IN', {minimumFractionDigits: 2});
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    grid: { color: tokens.gridColor },
+                    ticks: {
+                        color: tokens.textColor,
+                        font: { size: 9 },
+                        callback: function(v) { return 'Rs. ' + (v/1000).toFixed(0) + 'k'; }
+                    }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { color: tokens.textColor, font: { size: 8.5 }, maxRotation: 45 }
+                }
+            }
+        }
+    });
+
+    function snapshotChartForPrint() {
+        try {
+            const canvas = document.getElementById('forecastChart');
+            const printImg = document.getElementById('forecastChartPrintImg');
+            if (canvas && printImg) {
+                printImg.src = canvas.toDataURL('image/png', 1.0);
+            }
+        } catch (err) {
+            console.warn('Canvas toDataURL print fallback:', err);
+        }
+    }
+
+    // Attach native browser print hook (for Ctrl+P as well)
+    window.addEventListener('beforeprint', snapshotChartForPrint);
+
+    window.exportReportPDF = function() {
+        snapshotChartForPrint();
+        // Give browser 120ms to commit the image src before freezing the render thread
+        setTimeout(function() {
+            window.print();
+        }, 120);
+    };
+</script>
+{% endblock %}
